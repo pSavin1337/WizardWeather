@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">WizardWeather</string>
+    <string-array name="cities">
+        <item>Ульяновск</item>
+        <item>Димитровград</item>
+        <item>Саратов</item>
+        <item>Саранск</item>
+        <item>Самара</item>
+        <item>Тольятти</item>
+        <item>Казань</item>
+        <item>Уфа</item>
+        <item>Пермь</item>
+        <item>Санкт-Петербург</item>
+        <item>Тюмень</item>
+        <item>Москва</item>
+        <item>Йошкар-Ола</item>
+        <item>Волгоград</item>
+        <item>Батайск</item>
+        <item>Тула</item>
+        <item>Челябинск</item>
+        <item>Владимир</item>
+        <item>Нижний Новгород</item>
+        <item>Краснодар</item>
+        <item>Новороссийск</item>
+        <item>Ростов-на-Дону</item>
+        <item>Чебоксары</item>
+        <item>Севастополь</item>
+        <item>Ревда</item>
+        <item>Иваново</item>
+    </string-array>
 </resources>
