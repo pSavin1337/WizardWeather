@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.lospollos.wizardweather.R
+import com.lospollos.wizardweather.model.BaseItemAdapterItem
 
-class ViewPagerAdapter(private val cityName: String?):
+class ViewPagerAdapter(
+    private val cityName: String?,
+    private val apiResponse: List<List<BaseItemAdapterItem>>):
     RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
 
     class PagerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,7 +29,8 @@ class ViewPagerAdapter(private val cityName: String?):
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
-        holder.textView?.text = "$cityName $position"
+        val temperature = (apiResponse[position][0] as BaseItemAdapterItem.Temperature).temp
+        holder.textView?.text = "$cityName $temperature"
     }
 
     override fun getItemCount(): Int = daysCount
