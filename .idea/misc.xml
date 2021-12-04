@@ -4,8 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/TheEmperorPavel-II/AndroidStudioProjects/WizardWeather/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/Users/TheEmperorPavel-II/AndroidStudioProjects/WizardWeather/app/src/main/res/layout/activity_weather_cards.xml" value="0.1671195652173913" />
-        <entry key="..\:/Users/TheEmperorPavel-II/AndroidStudioProjects/WizardWeather/app/src/main/res/layout/cards_viewpager_item.xml" value="0.1" />
+        <entry key="..\:/Users/TheEmperorPavel-II/AndroidStudioProjects/WizardWeather/app/src/main/res/layout/activity_weather_cards.xml" value="0.14" />
+        <entry key="..\:/Users/TheEmperorPavel-II/AndroidStudioProjects/WizardWeather/app/src/main/res/layout/cards_viewpager_item.xml" value="0.12" />
         <entry key="..\:/Users/TheEmperorPavel-II/AndroidStudioProjects/WizardWeather/app/src/main/res/layout/main_recyclerview_item.xml" value="0.25" />
       </map>
     </option>

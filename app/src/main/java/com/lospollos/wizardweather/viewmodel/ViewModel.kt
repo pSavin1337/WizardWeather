@@ -17,7 +17,7 @@ class ViewModel: ViewModel() {
 
     val weatherItems = MutableLiveData<List<List<BaseItemAdapterItem>>>()
     val message = MutableLiveData<String>()
-    //val isLoading = MutableLiveData(false)
+    val isLoading = MutableLiveData(false)
 
     private val job = Job()
     private val vmScope = CoroutineScope(job + Dispatchers.Main.immediate)
@@ -31,16 +31,15 @@ class ViewModel: ViewModel() {
     @SuppressLint("CheckResult")
     fun loadWeather(city: String?, context: Context) {
         vmScope.launch {
-            //isLoading.value = true
+            isLoading.value = true
             val result = withContext(Dispatchers.IO) {
                 CoroutinesWeatherInteractor(
                     mapper = WeatherListItemMapper(),
                     errorMapper = WeatherErrorMapper(),
                     context
-                )
-                    .execute(cityName = city)
+                ).execute(cityName = city)
             }
-           // isLoading.value = false
+            isLoading.value = false
             handleResult(result)
         }
     }

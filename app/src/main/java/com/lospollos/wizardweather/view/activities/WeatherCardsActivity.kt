@@ -5,6 +5,8 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -21,6 +23,8 @@ class WeatherCardsActivity : AppCompatActivity() {
     private lateinit var viewModel: ViewModel
     private lateinit var adapter: ViewPagerAdapter
     private var selectedCityName: String? = null
+    private lateinit var viewPager: ViewPager2
+    private lateinit var progressBar: ProgressBar
 
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("CheckResult")
@@ -36,13 +40,25 @@ class WeatherCardsActivity : AppCompatActivity() {
         viewModel.loadWeather(selectedCityName, this)
         observeViewModel()
 
+        progressBar = findViewById(R.id.progressBar)
+        viewPager = findViewById(R.id.viewPager)
+
     }
 
     private fun observeViewModel() = with(viewModel) {
         weatherItems.observe(this@WeatherCardsActivity) {
-            val viewPager: ViewPager2 = findViewById(R.id.viewPager)
-            adapter = ViewPagerAdapter(selectedCityName, it)
+            adapter = ViewPagerAdapter(selectedCityName)
             viewPager.adapter = adapter
+            adapter.apiResponse = it
+        }
+        isLoading.observe(this@WeatherCardsActivity) {
+            if(it) {
+                viewPager.visibility = View.INVISIBLE
+                progressBar.visibility = View.VISIBLE
+            } else {
+                progressBar.visibility = View.INVISIBLE
+                viewPager.visibility = View.VISIBLE
+            }
         }
         message.observe(this@WeatherCardsActivity) {
             Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()

@@ -7,31 +7,10 @@ class WeatherListItemMapper :
         EntityToModelMapper<WeatherSuccessModel, List<List<BaseItemAdapterItem>>> {
     override fun mapEntity(entity: WeatherSuccessModel): List<List<BaseItemAdapterItem>> {
 
-        /*val dayCount = entity.cnt
-
-        val tempList: ArrayList<Double> = ArrayList(dayCount)
-        val presList: ArrayList<Int> = ArrayList(dayCount)
-        val humList: ArrayList<Int> = ArrayList(dayCount)
-        val speedList: ArrayList<Double> = ArrayList(dayCount)
-        val degreeList: ArrayList<Int> = ArrayList(dayCount)
-        val cloudsList: ArrayList<Int> = ArrayList(dayCount)
-        val idList: ArrayList<Int> = ArrayList(dayCount)
-        val descList: ArrayList<String> = ArrayList(dayCount)
-        val iconList: ArrayList<String> = ArrayList(dayCount)
-        for(i in 0..6) {
-            tempList.add(entity.list[i].temp.day)
-            presList.add(entity.list[i].pressure)
-            humList.add(entity.list[i].humidity)
-            speedList.add(entity.list[i].speed)
-            degreeList.add(entity.list[i].deg)
-            cloudsList.add(entity.list[i].clouds)
-            idList.add(entity.list[i].weather[0].id)
-            descList.add(entity.list[i].weather[0].description)
-            iconList.add(entity.list[i].weather[0].icon)
-        }*/
         val dayCount = entity.cnt
         val result: ArrayList<ArrayList<BaseItemAdapterItem>> = ArrayList(dayCount)
-        for (i in 0..6) {
+        var i = 0
+        for (j in 0..4) {
             val list: ArrayList<BaseItemAdapterItem> = ArrayList(6)
             list.add(
                 BaseItemAdapterItem.Temperature(
@@ -68,6 +47,7 @@ class WeatherListItemMapper :
                 )
             )
             result.add(list)
+            i += 8
         }
         return result
     }
