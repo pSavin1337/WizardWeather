@@ -2,6 +2,7 @@ package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +11,18 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.model.BaseItemAdapterItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ViewPagerAdapter(private val cityName: String?):
     RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
 
     lateinit var apiResponse: List<List<BaseItemAdapterItem>>
+    lateinit var icon: List<RequestBuilder<Drawable>>
 
     class PagerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView: TextView? = null
@@ -32,6 +38,7 @@ class ViewPagerAdapter(private val cityName: String?):
             .from(parent.context)
             .inflate(R.layout.cards_viewpager_item, parent, false))
 
+
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
         val temperature = (apiResponse[position][0] as BaseItemAdapterItem.Temperature).temp
@@ -43,8 +50,8 @@ class ViewPagerAdapter(private val cityName: String?):
         val weatherId = (apiResponse[position][5] as BaseItemAdapterItem.Weather).id
         val weatherDescription = (apiResponse[position][5] as BaseItemAdapterItem.Weather)
             .description
-        val weatherIcon = (apiResponse[position][5] as BaseItemAdapterItem.Weather).iconUrl
-        holder.image?.let { Glide.with(it.context).load(weatherIcon).into(it) }
+        //val weatherIcon = (apiResponse[position][5] as BaseItemAdapterItem.Weather).iconUrl
+        holder.image?.let { icon[position].into(it) }
         holder.textView?.text = "$cityName\n$temperature\n$pressure\n$humidity\n$windSpeed\n" +
                 "$windDegree\n$clouds\n$weatherId\n$weatherDescription"
     }

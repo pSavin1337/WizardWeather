@@ -2,10 +2,13 @@ package com.lospollos.wizardweather.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
 import com.lospollos.wizardweather.model.BaseItemAdapterItem
 import com.lospollos.wizardweather.model.mappers.WeatherErrorMapper
 import com.lospollos.wizardweather.model.mappers.WeatherListItemMapper
@@ -18,6 +21,7 @@ class ViewModel: ViewModel() {
     val weatherItems = MutableLiveData<List<List<BaseItemAdapterItem>>>()
     val message = MutableLiveData<String>()
     val isLoading = MutableLiveData(false)
+    var icon = MutableLiveData<ArrayList<RequestBuilder<Drawable>>>()
 
     private val job = Job()
     private val vmScope = CoroutineScope(job + Dispatchers.Main.immediate)
@@ -39,14 +43,22 @@ class ViewModel: ViewModel() {
                     context
                 ).execute(cityName = city)
             }
+            handleResult(result, context)
             isLoading.value = false
-            handleResult(result)
         }
     }
 
-    private fun handleResult(result: Result) {
+    private fun handleResult(result: Result, context: Context) {
         when (result) {
-            is Result.Success -> weatherItems.value = result.items
+            is Result.Success -> {
+                weatherItems.value = result.items
+                val iconWeatherList: ArrayList<RequestBuilder<Drawable>> = ArrayList(5)
+                for(i in 0..4)
+                    iconWeatherList
+                        .add(Glide.with(context)
+                        .load((result.items[i][5] as BaseItemAdapterItem.Weather).iconUrl))
+                icon.value = iconWeatherList
+            }
             is Result.Error -> handleError(result)
         }
     }

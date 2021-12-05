@@ -25,6 +25,7 @@ class WeatherCardsActivity : AppCompatActivity() {
     private var selectedCityName: String? = null
     private lateinit var viewPager: ViewPager2
     private lateinit var progressBar: ProgressBar
+    private lateinit var apiResponse: List<List<BaseItemAdapterItem>>
 
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("CheckResult")
@@ -47,9 +48,7 @@ class WeatherCardsActivity : AppCompatActivity() {
 
     private fun observeViewModel() = with(viewModel) {
         weatherItems.observe(this@WeatherCardsActivity) {
-            adapter = ViewPagerAdapter(selectedCityName)
-            viewPager.adapter = adapter
-            adapter.apiResponse = it
+            apiResponse = it
         }
         isLoading.observe(this@WeatherCardsActivity) {
             if(it) {
@@ -59,6 +58,12 @@ class WeatherCardsActivity : AppCompatActivity() {
                 progressBar.visibility = View.INVISIBLE
                 viewPager.visibility = View.VISIBLE
             }
+        }
+        icon.observe(this@WeatherCardsActivity) {
+            adapter = ViewPagerAdapter(selectedCityName)
+            viewPager.adapter = adapter
+            adapter.icon = it
+            adapter.apiResponse = apiResponse
         }
         message.observe(this@WeatherCardsActivity) {
             Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
