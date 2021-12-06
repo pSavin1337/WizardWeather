@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model
+package com.lospollos.wizardweather.model.network
 
 sealed class BaseItemAdapterItem {
     data class Temperature(
@@ -27,6 +27,15 @@ sealed class BaseItemAdapterItem {
         val description: String,
         val iconUrl: String,
     ) : BaseItemAdapterItem()
+
+    data class Date(
+        val date: String
+    ): BaseItemAdapterItem()
+
+    data class City(
+        val city: String
+    ): BaseItemAdapterItem()
+
 }
 
 data class NotFoundError(val message: String)

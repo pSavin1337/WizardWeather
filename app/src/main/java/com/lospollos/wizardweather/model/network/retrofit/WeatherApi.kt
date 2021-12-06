@@ -1,6 +1,6 @@
-package com.lospollos.wizardweather.model.retrofit
+package com.lospollos.wizardweather.model.network.retrofit
 
-import com.lospollos.wizardweather.model.WeatherSuccessModel
+import com.lospollos.wizardweather.model.network.WeatherSuccessModel
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

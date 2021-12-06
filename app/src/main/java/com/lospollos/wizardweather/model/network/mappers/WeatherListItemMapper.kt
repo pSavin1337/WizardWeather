@@ -1,17 +1,17 @@
-package com.lospollos.wizardweather.model.mappers
+package com.lospollos.wizardweather.model.network.mappers
 
-import com.lospollos.wizardweather.model.BaseItemAdapterItem
-import com.lospollos.wizardweather.model.WeatherSuccessModel
+import com.lospollos.wizardweather.Constants.dayCount
+import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.model.network.WeatherSuccessModel
 
 class WeatherListItemMapper :
         EntityToModelMapper<WeatherSuccessModel, List<List<BaseItemAdapterItem>>> {
     override fun mapEntity(entity: WeatherSuccessModel): List<List<BaseItemAdapterItem>> {
 
-        val dayCount = entity.cnt
         val result: ArrayList<ArrayList<BaseItemAdapterItem>> = ArrayList(dayCount)
         var i = 0
         for (j in 0..4) {
-            val list: ArrayList<BaseItemAdapterItem> = ArrayList(6)
+            val list: ArrayList<BaseItemAdapterItem> = ArrayList(7)
             list.add(
                 BaseItemAdapterItem.Temperature(
                     temp = "Температура: ${entity.list[i].main.temp}"
@@ -44,6 +44,11 @@ class WeatherListItemMapper :
                     description = entity.list[i].weather[0].description,
                     iconUrl =
                         "https://openweathermap.org/img/wn/${entity.list[i].weather[0].icon}@2x.png"
+                )
+            )
+            list.add(
+                BaseItemAdapterItem.Date(
+                    date = entity.list[i].dt_txt.split(" ")[0]
                 )
             )
             result.add(list)

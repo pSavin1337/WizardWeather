@@ -1,28 +1,24 @@
 package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
+import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.R
-import com.lospollos.wizardweather.model.BaseItemAdapterItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
 
 class ViewPagerAdapter(private val cityName: String?):
     RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
 
     lateinit var apiResponse: List<List<BaseItemAdapterItem>>
-    lateinit var icon: List<RequestBuilder<Drawable>>
+    lateinit var icon: List<Bitmap>
 
     class PagerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView: TextView? = null
@@ -41,19 +37,20 @@ class ViewPagerAdapter(private val cityName: String?):
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
-        val temperature = (apiResponse[position][0] as BaseItemAdapterItem.Temperature).temp
-        val pressure = (apiResponse[position][1] as BaseItemAdapterItem.Pressure).value
-        val humidity = (apiResponse[position][2] as BaseItemAdapterItem.Humidity).value
-        val windSpeed = (apiResponse[position][3] as BaseItemAdapterItem.Wind).speed
-        val windDegree = (apiResponse[position][3] as BaseItemAdapterItem.Wind).degree
-        val clouds = (apiResponse[position][4] as BaseItemAdapterItem.Clouds).value
-        val weatherId = (apiResponse[position][5] as BaseItemAdapterItem.Weather).id
-        val weatherDescription = (apiResponse[position][5] as BaseItemAdapterItem.Weather)
+        val temperature = (apiResponse[position][Constants.TEMP] as BaseItemAdapterItem.Temperature)
+            .temp
+        val pressure = (apiResponse[position][Constants.PRES] as BaseItemAdapterItem.Pressure).value
+        val humidity = (apiResponse[position][Constants.HUMID] as BaseItemAdapterItem.Humidity)
+            .value
+        val windSpeed = (apiResponse[position][Constants.WIND] as BaseItemAdapterItem.Wind).speed
+        val windDegree = (apiResponse[position][Constants.WIND] as BaseItemAdapterItem.Wind).degree
+        val clouds = (apiResponse[position][Constants.CLOUDS] as BaseItemAdapterItem.Clouds).value
+        val weatherId = (apiResponse[position][Constants.WEATHER] as BaseItemAdapterItem.Weather).id
+        val weatherDesc = (apiResponse[position][Constants.WEATHER] as BaseItemAdapterItem.Weather)
             .description
-        //val weatherIcon = (apiResponse[position][5] as BaseItemAdapterItem.Weather).iconUrl
-        holder.image?.let { icon[position].into(it) }
+        holder.image?.setImageBitmap(icon[position])
         holder.textView?.text = "$cityName\n$temperature\n$pressure\n$humidity\n$windSpeed\n" +
-                "$windDegree\n$clouds\n$weatherId\n$weatherDescription"
+                "$windDegree\n$clouds\n$weatherId\n$weatherDesc"
     }
 
     override fun getItemCount(): Int = daysCount

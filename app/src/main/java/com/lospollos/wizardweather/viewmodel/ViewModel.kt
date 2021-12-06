@@ -2,6 +2,7 @@ package com.lospollos.wizardweather.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,20 +10,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
-import com.lospollos.wizardweather.model.BaseItemAdapterItem
-import com.lospollos.wizardweather.model.mappers.WeatherErrorMapper
-import com.lospollos.wizardweather.model.mappers.WeatherListItemMapper
-import com.lospollos.wizardweather.model.retrofit.CoroutinesWeatherInteractor
+import com.lospollos.wizardweather.App
+import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.model.network.ImageLoader
+import com.lospollos.wizardweather.model.network.mappers.WeatherErrorMapper
+import com.lospollos.wizardweather.model.network.mappers.WeatherListItemMapper
+import com.lospollos.wizardweather.model.network.retrofit.CoroutinesWeatherInteractor
 import kotlinx.coroutines.*
-import com.lospollos.wizardweather.model.retrofit.Result
+import com.lospollos.wizardweather.model.network.retrofit.Result
 
 class ViewModel: ViewModel() {
 
     val weatherItems = MutableLiveData<List<List<BaseItemAdapterItem>>>()
     val message = MutableLiveData<String>()
     val isLoading = MutableLiveData(false)
-    var icon = MutableLiveData<ArrayList<RequestBuilder<Drawable>>>()
-
+    var icon = MutableLiveData<List<Bitmap>>()
+    //RequestBuilder<Drawable>
     private val job = Job()
     private val vmScope = CoroutineScope(job + Dispatchers.Main.immediate)
 
@@ -33,31 +36,29 @@ class ViewModel: ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("CheckResult")
-    fun loadWeather(city: String?, context: Context) {
+    fun loadWeather(city: String) {
         vmScope.launch {
             isLoading.value = true
             val result = withContext(Dispatchers.IO) {
                 CoroutinesWeatherInteractor(
                     mapper = WeatherListItemMapper(),
-                    errorMapper = WeatherErrorMapper(),
-                    context
+                    errorMapper = WeatherErrorMapper()
                 ).execute(cityName = city)
             }
-            handleResult(result, context)
+            handleResult(result)
             isLoading.value = false
         }
     }
 
-    private fun handleResult(result: Result, context: Context) {
+    private fun handleResult(result: Result) {
         when (result) {
             is Result.Success -> {
                 weatherItems.value = result.items
-                val iconWeatherList: ArrayList<RequestBuilder<Drawable>> = ArrayList(5)
-                for(i in 0..4)
-                    iconWeatherList
-                        .add(Glide.with(context)
-                        .load((result.items[i][5] as BaseItemAdapterItem.Weather).iconUrl))
-                icon.value = iconWeatherList
+                icon.value = ImageLoader.loadImage(result)
+            }
+            is Result.LoadedFromDB -> {
+                weatherItems.value = result.items.first
+                icon.value = result.items.second
             }
             is Result.Error -> handleError(result)
         }

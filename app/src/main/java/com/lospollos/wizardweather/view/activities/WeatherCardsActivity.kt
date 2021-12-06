@@ -4,25 +4,22 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.lospollos.wizardweather.R
-import com.lospollos.wizardweather.model.BaseItemAdapterItem
+import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
 import com.lospollos.wizardweather.view.ViewPagerAdapter
 import com.lospollos.wizardweather.viewmodel.ViewModel
-import com.lospollos.wizardweather.model.retrofit.Result
 
 class WeatherCardsActivity : AppCompatActivity() {
 
     private lateinit var viewModel: ViewModel
     private lateinit var adapter: ViewPagerAdapter
-    private var selectedCityName: String? = null
+    private lateinit var selectedCityName: String
     private lateinit var viewPager: ViewPager2
     private lateinit var progressBar: ProgressBar
     private lateinit var apiResponse: List<List<BaseItemAdapterItem>>
@@ -33,12 +30,12 @@ class WeatherCardsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather_cards)
 
-        selectedCityName = intent.extras?.getString("cityName")
+        selectedCityName = intent.extras?.getString("cityName").toString()
 
         viewModel = ViewModelProvider(
             this,
             defaultViewModelProviderFactory)[ViewModel::class.java]
-        viewModel.loadWeather(selectedCityName, this)
+        viewModel.loadWeather(selectedCityName)
         observeViewModel()
 
         progressBar = findViewById(R.id.progressBar)

@@ -1,7 +1,7 @@
-package com.lospollos.wizardweather.model.mappers
+package com.lospollos.wizardweather.model.network.mappers
 
-import com.lospollos.wizardweather.model.NotFoundError
-import com.lospollos.wizardweather.model.WeatherErrorModel
+import com.lospollos.wizardweather.model.network.NotFoundError
+import com.lospollos.wizardweather.model.network.WeatherErrorModel
 
 class WeatherErrorMapper : EntityToModelMapper<WeatherErrorModel, NotFoundError> {
     override fun mapEntity(entity: WeatherErrorModel): NotFoundError {
