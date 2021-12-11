@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">WizardWeather</string>
+    <string name="share_button_text">Отправить</string>
+    <string name="weather_image_content_desc">Изображение погоды</string>
+    <string name="back_button_text">Назад</string>
     <string-array name="cities">
         <item>Ульяновск</item>
         <item>Димитровград</item>
@@ -28,4 +31,7 @@
         <item>Ревда</item>
         <item>Иваново</item>
     </string-array>
+    <string name="fav_city_but_cont_desc">Выбрать данный город для получения погоды</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

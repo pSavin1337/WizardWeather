@@ -32,10 +32,6 @@ sealed class BaseItemAdapterItem {
         val date: String
     ): BaseItemAdapterItem()
 
-    data class City(
-        val city: String
-    ): BaseItemAdapterItem()
-
 }
 
 data class NotFoundError(val message: String)

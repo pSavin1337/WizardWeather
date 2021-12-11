@@ -1,23 +1,18 @@
 package com.lospollos.wizardweather.viewmodel
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
-import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
 import com.lospollos.wizardweather.model.network.ImageLoader
 import com.lospollos.wizardweather.model.network.mappers.WeatherErrorMapper
 import com.lospollos.wizardweather.model.network.mappers.WeatherListItemMapper
 import com.lospollos.wizardweather.model.network.retrofit.CoroutinesWeatherInteractor
-import kotlinx.coroutines.*
 import com.lospollos.wizardweather.model.network.retrofit.Result
+import kotlinx.coroutines.*
 
 class ViewModel: ViewModel() {
 
@@ -25,7 +20,6 @@ class ViewModel: ViewModel() {
     val message = MutableLiveData<String>()
     val isLoading = MutableLiveData(false)
     var icon = MutableLiveData<List<Bitmap>>()
-    //RequestBuilder<Drawable>
     private val job = Job()
     private val vmScope = CoroutineScope(job + Dispatchers.Main.immediate)
 

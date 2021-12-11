@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.lospollos.wizardweather.model.database.WeatherDB
+import com.lospollos.wizardweather.view.City
 
 class App: Application() {
 
@@ -13,6 +14,9 @@ class App: Application() {
         context = this
         database = Room.databaseBuilder(this, WeatherDB::class.java, "weather_db")
             .build()
+        this.resources.getStringArray(R.array.cities).forEach {
+            cities.add(City(it, false))
+        }
     }
 
     companion object {
@@ -22,6 +26,8 @@ class App: Application() {
         @SuppressLint("StaticFieldLeak")
         lateinit var database: WeatherDB
             private set
+        @SuppressLint("StaticFieldLeak")
+        var cities: ArrayList<City> = ArrayList()
     }
 
 }

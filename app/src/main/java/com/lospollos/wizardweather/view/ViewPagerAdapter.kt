@@ -1,20 +1,28 @@
 package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
+import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
 
-class ViewPagerAdapter(private val cityName: String?):
+class ViewPagerAdapter(
+    private val cityName: String?,
+    val startShareDisplay: (weatherData: String) -> Unit,
+    val toCityList: () -> Unit):
     RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
 
     lateinit var apiResponse: List<List<BaseItemAdapterItem>>
@@ -23,9 +31,15 @@ class ViewPagerAdapter(private val cityName: String?):
     class PagerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView: TextView? = null
         var image: ImageView? = null
+        var shareButton: Button? = null
+        var diagramView: DiagramView? = null
+        var backButton: Button? = null
         init {
             image = itemView.findViewById(R.id.imageView)
             textView = itemView.findViewById(R.id.textView)
+            shareButton = itemView.findViewById(R.id.shareButton)
+            diagramView = itemView.findViewById(R.id.diagramView)
+            backButton = itemView.findViewById(R.id.back_button)
         }
     }
 
@@ -48,9 +62,19 @@ class ViewPagerAdapter(private val cityName: String?):
         val weatherId = (apiResponse[position][Constants.WEATHER] as BaseItemAdapterItem.Weather).id
         val weatherDesc = (apiResponse[position][Constants.WEATHER] as BaseItemAdapterItem.Weather)
             .description
+        val weatherDate = (apiResponse[position][Constants.DATE] as BaseItemAdapterItem.Date).date
         holder.image?.setImageBitmap(icon[position])
         holder.textView?.text = "$cityName\n$temperature\n$pressure\n$humidity\n$windSpeed\n" +
-                "$windDegree\n$clouds\n$weatherId\n$weatherDesc"
+                "$windDegree\n$clouds\n$weatherId\n$weatherDesc\n$weatherDate"
+        holder.diagramView?.humidity =
+            (apiResponse[position][Constants.HUMID] as BaseItemAdapterItem.Humidity)
+            .value.split(" ")[1].toInt()
+        holder.shareButton?.setOnClickListener {
+            startShareDisplay("$cityName\n$temperature\n$weatherDate")
+        }
+        holder.backButton?.setOnClickListener {
+            toCityList()
+        }
     }
 
     override fun getItemCount(): Int = daysCount

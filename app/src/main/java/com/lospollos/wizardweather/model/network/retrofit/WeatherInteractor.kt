@@ -27,8 +27,6 @@ class CoroutinesWeatherInteractor(
                 Result.LoadedFromDB(WeatherDBProvider.getWeatherByCityName(cityName))
             }
         else {
-            //if notNetwork and DB.isEmpty then Error else
-            //if !DB.isEmpty loadFromDB else if net - add to Db and View
             val response = try {
                 RetrofitServieces
                     .coroutinesWeatherApi
