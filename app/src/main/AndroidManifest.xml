@@ -20,11 +20,8 @@
         <service
             android:name=".view.services.WeatherNotificationService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false"/>
 
-        <activity
-            android:name=".view.activities.WeatherCardsActivity"
-            android:exported="true" />
         <activity
             android:name=".view.activities.MainActivity"
             android:exported="true">

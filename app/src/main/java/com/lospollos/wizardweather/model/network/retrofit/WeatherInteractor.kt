@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.RequestBuilder
 import com.google.gson.Gson
@@ -27,19 +28,21 @@ class CoroutinesWeatherInteractor(
                 Result.LoadedFromDB(WeatherDBProvider.getWeatherByCityName(cityName))
             }
         else {
-            val response = try {
-                RetrofitServieces
+            val weatherData: Result
+            try {
+                val response = RetrofitServieces
                     .coroutinesWeatherApi
                     .loadWeatherByCityName(cityName)
+                weatherData = handleResponse(response, mapper, errorMapper)
+
+                WeatherDBProvider.deleteOldWeatherByCityName(cityName)
+                WeatherDBProvider.insertWeatherForCity(
+                    (weatherData as Result.Success).items,
+                    ImageLoader.loadImage(weatherData),
+                    cityName)
             } catch (e: Exception) {
                 return handleError(e)
             }
-            val weatherData = handleResponse(response, mapper, errorMapper)
-            WeatherDBProvider.deleteOldWeatherByCityName(cityName)
-            WeatherDBProvider.insertWeatherForCity(
-                (weatherData as Result.Success).items,
-                ImageLoader.loadImage(weatherData),
-                cityName)
             return weatherData
         }
     }
@@ -98,8 +101,8 @@ class CoroutinesWeatherInteractor(
 sealed class Result {
     data class Success(val items: List<List<BaseItemAdapterItem>>) : Result()
 
-    data class LoadedFromDB(val items: Pair<List<List<BaseItemAdapterItem>>,
-            List<Bitmap>>) : Result()
+    data class LoadedFromDB(val items: Pair<List<List<BaseItemAdapterItem>>?,
+            List<Bitmap>?>) : Result()
 
     sealed class Error : Result() {
         data class NotFound(val error: NotFoundError) : Result.Error()

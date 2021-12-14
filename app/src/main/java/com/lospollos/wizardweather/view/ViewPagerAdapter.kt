@@ -54,18 +54,10 @@ class ViewPagerAdapter(
         val temperature = (apiResponse[position][Constants.TEMP] as BaseItemAdapterItem.Temperature)
             .temp
         val pressure = (apiResponse[position][Constants.PRES] as BaseItemAdapterItem.Pressure).value
-        val humidity = (apiResponse[position][Constants.HUMID] as BaseItemAdapterItem.Humidity)
-            .value
         val windSpeed = (apiResponse[position][Constants.WIND] as BaseItemAdapterItem.Wind).speed
-        val windDegree = (apiResponse[position][Constants.WIND] as BaseItemAdapterItem.Wind).degree
-        val clouds = (apiResponse[position][Constants.CLOUDS] as BaseItemAdapterItem.Clouds).value
-        val weatherId = (apiResponse[position][Constants.WEATHER] as BaseItemAdapterItem.Weather).id
-        val weatherDesc = (apiResponse[position][Constants.WEATHER] as BaseItemAdapterItem.Weather)
-            .description
         val weatherDate = (apiResponse[position][Constants.DATE] as BaseItemAdapterItem.Date).date
         holder.image?.setImageBitmap(icon[position])
-        holder.textView?.text = "$cityName\n$temperature\n$pressure\n$humidity\n$windSpeed\n" +
-                "$windDegree\n$clouds\n$weatherId\n$weatherDesc\n$weatherDate"
+        holder.textView?.text = "$cityName\n$temperature\n$pressure\n$windSpeed\n\n$weatherDate"
         holder.diagramView?.humidity =
             (apiResponse[position][Constants.HUMID] as BaseItemAdapterItem.Humidity)
             .value.split(" ")[1].toInt()

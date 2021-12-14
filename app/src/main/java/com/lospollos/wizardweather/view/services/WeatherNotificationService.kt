@@ -30,7 +30,6 @@ class WeatherNotificationService : Service() {
     private fun createNotification(intent: Intent?, cityName: String?, weatherInfo: String?)
             : Notification {
 
-        // This PendingIntent can be used to cancel the worker
         val intent1 = Intent(this, WeatherNotificationService::class.java)
         intent1.apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -38,17 +37,12 @@ class WeatherNotificationService : Service() {
         val pendingIntent = PendingIntent.getActivity(context, 0, intent1, 0)
         val cancel = "Закрыть"
 
-        // Create a Notification channel if necessary
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            // Create the NotificationChannel
-            val name = "not"
-            val descriptionText = "getString(R.string.channel_description)"
+            val name = "Weather notification"
+            val descriptionText = "Information about temperature in your city"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
             mChannel.description = descriptionText
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             val notificationManager = applicationContext.getSystemService(NOTIFICATION_SERVICE)
                     as NotificationManager
             notificationManager.createNotificationChannel(mChannel)
@@ -59,10 +53,8 @@ class WeatherNotificationService : Service() {
             .setContentTitle(cityName)
             .setContentText(weatherInfo)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setOngoing(true)
+            .setOngoing(false)
             .setVisibility(VISIBILITY_PUBLIC)
-            // Add the cancel action to the notification which can
-            // be used to cancel the worker
             //.addAction(android.R.drawable.ic_delete, cancel, paddingIntent)
             .setContentIntent(pendingIntent)
             .build()

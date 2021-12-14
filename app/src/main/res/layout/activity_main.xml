@@ -10,21 +10,23 @@
         android:id="@+id/weather_cards_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="2dp"
+        android:elevation="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/city_list_fragment"
         android:name="com.lospollos.wizardweather.view.fragments.CityListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_city_list" />
 
 
 </RelativeLayout>

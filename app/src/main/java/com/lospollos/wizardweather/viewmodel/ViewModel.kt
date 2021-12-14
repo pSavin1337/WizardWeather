@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
@@ -16,10 +17,16 @@ import kotlinx.coroutines.*
 
 class ViewModel: ViewModel() {
 
-    val weatherItems = MutableLiveData<List<List<BaseItemAdapterItem>>>()
-    val message = MutableLiveData<String>()
-    val isLoading = MutableLiveData(false)
-    var icon = MutableLiveData<List<Bitmap>>()
+    private val weatherItems = MutableLiveData<List<List<BaseItemAdapterItem>>>()
+    private val message = MutableLiveData<String>()
+    private val isLoading = MutableLiveData(false)
+    private val icon = MutableLiveData<List<Bitmap>>()
+
+    fun getWeatherItems(): LiveData<List<List<BaseItemAdapterItem>>> = weatherItems
+    fun getMessage(): LiveData<String> = message
+    fun getIsLoading(): LiveData<Boolean> = isLoading
+    fun getIcon(): LiveData<List<Bitmap>> = icon
+
     private val job = Job()
     private val vmScope = CoroutineScope(job + Dispatchers.Main.immediate)
 
@@ -51,8 +58,8 @@ class ViewModel: ViewModel() {
                 icon.value = ImageLoader.loadImage(result)
             }
             is Result.LoadedFromDB -> {
-                weatherItems.value = result.items.first
-                icon.value = result.items.second
+                weatherItems.value = result.items.first!!
+                icon.value = result.items.second!!
             }
             is Result.Error -> handleError(result)
         }
@@ -60,7 +67,7 @@ class ViewModel: ViewModel() {
 
     private fun handleError(result: Result.Error) {
         when (result) {
-            Result.Error.NoNetwork -> message.value = "Нет сети"
+            is Result.Error.NoNetwork -> message.value = "Нет сети"
             is Result.Error.NotFound -> message.value = result.error.message
             is Result.Error.Unknown -> message.value = "Неизветсная ошибка"
         }

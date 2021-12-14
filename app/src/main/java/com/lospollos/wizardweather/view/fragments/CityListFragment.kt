@@ -17,11 +17,11 @@ import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
 import com.lospollos.wizardweather.view.ItemTouchHelperCallback
 import com.lospollos.wizardweather.view.MainRecyclerAdapter
+import com.lospollos.wizardweather.view.activities.MainActivity
 import com.lospollos.wizardweather.view.services.WeatherNotificationService
 import com.lospollos.wizardweather.viewmodel.ViewModel
 
 class CityListFragment : Fragment() {
-    private lateinit var viewModel: ViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,30 +33,26 @@ class CityListFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.elevation = 2f
-        viewModel = ViewModelProvider(
+        val serviceViewModel = ViewModelProvider(
             this,
             defaultViewModelProviderFactory)[ViewModel::class.java]
 
         val adapter = MainRecyclerAdapter ({
-            /*Start WeatherCardActivity*/
-            /*intent = Intent(this, WeatherCardsActivity::class.java)
-            intent.putExtra("cityName", it)
-            startActivity(intent)*/
-            val arguments = Bundle()
-            arguments.putString("cityName", it)
-            activity?.supportFragmentManager?.beginTransaction()
-                ?.add(R.id.weather_cards_fragment, WeatherCardsFragment::class.java, arguments)
-                ?.commit()
+
+            /*Start WeatherCardFragment*/
+
+            (activity as MainActivity).openWeatherCardsFragment(it)
+
         }, { it1 ->
             /*Start Service*/
             //var workRequest: WorkRequest
             val intentService = Intent(activity, WeatherNotificationService::class.java)
             //val dataWeather = Data.Builder().putString("cityName", it1)
+
             intentService.putExtra("cityName", it1)
-            viewModel.loadWeather(it1)
-            with(viewModel) {
-                weatherItems.observe(viewLifecycleOwner) {
+            serviceViewModel.loadWeather(it1)
+            with(serviceViewModel) {
+                getWeatherItems().observe(viewLifecycleOwner) {
                     intentService
                         .putExtra(
                             "weatherInfo",
@@ -64,16 +60,18 @@ class CityListFragment : Fragment() {
                         )
                     activity?.stopService(intentService)
                     activity?.startService(intentService)
+                    //serviceViewModel.getWeatherItems().removeObservers(viewLifecycleOwner)
                     /*workRequest = PeriodicWorkRequest.Builder(
                         WeatherNotificationWorker::class.java, 1, TimeUnit.HOURS
                     ).setInputData(dataWeather.build()).build()
                     WorkManager.getInstance(this@MainActivity).enqueue(workRequest)*/
                 }
-                message.observe(viewLifecycleOwner) {
-                    intentService.putExtra("weatherInfo", message.value)
+                getMessage().observe(viewLifecycleOwner) {
+                    intentService.putExtra("weatherInfo", getMessage().value)
                     activity?.stopService(intentService)
                     activity?.startService(intentService)
-                    /*workRequest = PeriodicWorkRequest.Builder(
+                    //serviceViewModel.getMessage().removeObservers(viewLifecycleOwner)
+                /*workRequest = PeriodicWorkRequest.Builder(
                             WeatherNotificationWorker::class.java, 1, TimeUnit.HOURS
                         ).setInputData(dataWeather.build()).build()
                         WorkManager.getInstance(this@MainActivity).enqueue(workRequest)*/
@@ -97,4 +95,5 @@ class CityListFragment : Fragment() {
         recyclerView.adapter = adapter
         //TODO("Пофиксить сохранение изменений d&d при обновлении экрана")
     }
+
 }
