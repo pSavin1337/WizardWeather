@@ -7,12 +7,14 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.lospollos.wizardweather.model.database.CityDBProvider
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
 import com.lospollos.wizardweather.model.network.ImageLoader
 import com.lospollos.wizardweather.model.network.mappers.WeatherErrorMapper
 import com.lospollos.wizardweather.model.network.mappers.WeatherListItemMapper
-import com.lospollos.wizardweather.model.network.retrofit.CoroutinesWeatherInteractor
+import com.lospollos.wizardweather.model.network.retrofit.WeatherInteractor
 import com.lospollos.wizardweather.model.network.retrofit.Result
+import com.lospollos.wizardweather.view.City
 import kotlinx.coroutines.*
 
 class ViewModel: ViewModel() {
@@ -22,10 +24,14 @@ class ViewModel: ViewModel() {
     private val isLoading = MutableLiveData(false)
     private val icon = MutableLiveData<List<Bitmap>>()
 
+    private val cityList = MutableLiveData<List<City>?>()
+
     fun getWeatherItems(): LiveData<List<List<BaseItemAdapterItem>>> = weatherItems
     fun getMessage(): LiveData<String> = message
     fun getIsLoading(): LiveData<Boolean> = isLoading
     fun getIcon(): LiveData<List<Bitmap>> = icon
+
+    fun getCityListLiveData(): LiveData<List<City>?> = cityList
 
     private val job = Job()
     private val vmScope = CoroutineScope(job + Dispatchers.Main.immediate)
@@ -35,13 +41,25 @@ class ViewModel: ViewModel() {
         vmScope.cancel()
     }
 
+    fun getCityList() = vmScope.launch {
+        cityList.value = withContext(Dispatchers.IO) {
+            CityDBProvider.getCityList()
+        }
+    }
+
+    fun updateCityList(cityList: List<City>) = vmScope.launch {
+        withContext(Dispatchers.IO) {
+            CityDBProvider.updateCityList(cityList)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("CheckResult")
     fun loadWeather(city: String) {
         vmScope.launch {
             isLoading.value = true
             val result = withContext(Dispatchers.IO) {
-                CoroutinesWeatherInteractor(
+                WeatherInteractor(
                     mapper = WeatherListItemMapper(),
                     errorMapper = WeatherErrorMapper()
                 ).execute(cityName = city)

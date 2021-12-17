@@ -17,4 +17,14 @@ interface WeatherDao {
     @Query("SELECT * FROM entityweatherdb WHERE city LIKE :cityName")
     fun getWeatherByCityName(cityName: String) : List<EntityWeatherDB>
 
+
+    @Insert
+    fun insertCityList(cityList: List<CityEntity>)
+
+    @Delete
+    fun deleteCityList(cityList: List<CityEntity>)
+
+    @Query("SELECT * FROM cityentity")
+    fun getCityList(): List<CityEntity>
+
 }

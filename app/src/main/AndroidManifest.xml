@@ -17,10 +17,10 @@
         android:theme="@style/Theme.WizardWeather"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <service
+        <!--<service
             android:name=".view.services.WeatherNotificationService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false"/>-->
 
         <activity
             android:name=".view.activities.MainActivity"

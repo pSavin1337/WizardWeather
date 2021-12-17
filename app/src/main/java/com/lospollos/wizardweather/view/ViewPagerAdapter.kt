@@ -1,20 +1,14 @@
 package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestBuilder
-import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem

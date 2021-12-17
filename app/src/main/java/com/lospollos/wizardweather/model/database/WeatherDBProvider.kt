@@ -2,7 +2,6 @@ package com.lospollos.wizardweather.model.database
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.bumptech.glide.RequestBuilder
 import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.Constants.dayCount

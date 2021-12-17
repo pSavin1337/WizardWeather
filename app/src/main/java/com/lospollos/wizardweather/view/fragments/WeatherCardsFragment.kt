@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.lospollos.wizardweather.R
@@ -78,12 +77,8 @@ class WeatherCardsFragment : Fragment() {
                 adapter.apiResponse = apiResponse
             }
             getMessage().observe(viewLifecycleOwner) {
-                //if(sharedViewModel.message.value != null) {
-                    Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
-                    //sharedViewModel.message.call()
-                    //viewPager.visibility = View.INVISIBLE
-                    (activity as MainActivity).closeWeatherCardsFragment()
-                //}
+                Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+                (activity as MainActivity).closeWeatherCardsFragment()
             }
         }
     }

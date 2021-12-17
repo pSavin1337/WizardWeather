@@ -1,11 +1,8 @@
 package com.lospollos.wizardweather.model.database
 
-import android.graphics.drawable.Drawable
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.bumptech.glide.RequestBuilder
 
 @Entity
 class EntityWeatherDB(
@@ -23,4 +20,12 @@ class EntityWeatherDB(
     var weatherDescription: String,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
     var icon: ByteArray
+)
+
+@Entity
+class CityEntity(
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
+    var cityName: String,
+    var isFavorite: Boolean
 )

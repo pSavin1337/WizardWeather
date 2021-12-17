@@ -1,20 +1,20 @@
 package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.WorkManager
+import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.App.Companion.cities
-import com.lospollos.wizardweather.App.Companion.context
 import com.lospollos.wizardweather.R
 import java.util.*
 
 class MainRecyclerAdapter(
-    val startWeatherCardsActivity: (cityName: String) -> Unit,
+    val startWeatherCardsFragment: (cityName: String) -> Unit,
     val startWeatherService: (cityName: String) -> Unit
     ) : RecyclerView.Adapter<MainRecyclerAdapter.MainViewHolder>(), ItemTouchHelperAdapter{
 
@@ -37,23 +37,29 @@ class MainRecyclerAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
+
         holder.textView?.text = cities[position].cityName
         holder.textView?.setOnClickListener {
-            startWeatherCardsActivity(cities[position].cityName)
+            startWeatherCardsFragment(cities[position].cityName)
         }
 
-        if(position == selectedPosition && holder.favoriteCityButton?.isChecked == true) {
-            holder.favoriteCityButton?.clearFocus()
-
-            //stop
-        } else {
-            holder.favoriteCityButton?.isChecked = position == selectedPosition
-        }
+        holder.favoriteCityButton?.isChecked = cities[holder.bindingAdapterPosition].isFavorite
 
         holder.favoriteCityButton?.setOnClickListener {
             selectedPosition = holder.bindingAdapterPosition
-            startWeatherService(cities[position].cityName)
-            //TODO: fix stop service
+            if(cities[selectedPosition].isFavorite) {
+                cities.forEach {
+                    it.isFavorite = false
+                }
+                WorkManager.getInstance(App.context).cancelAllWork()
+            }
+            else {
+                cities.forEach {
+                    it.isFavorite = false
+                }
+                cities[position].isFavorite = true
+                startWeatherService(cities[position].cityName)
+            }
 
             notifyDataSetChanged()
         }

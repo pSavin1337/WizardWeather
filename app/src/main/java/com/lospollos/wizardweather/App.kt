@@ -13,10 +13,8 @@ class App: Application() {
         super.onCreate()
         context = this
         database = Room.databaseBuilder(this, WeatherDB::class.java, "weather_db")
+            .fallbackToDestructiveMigration()
             .build()
-        this.resources.getStringArray(R.array.cities).forEach {
-            cities.add(City(it, false))
-        }
     }
 
     companion object {

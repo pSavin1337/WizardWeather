@@ -8,7 +8,6 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import com.lospollos.wizardweather.R
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class DiagramView @JvmOverloads constructor(
@@ -58,14 +57,10 @@ class DiagramView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas?) {
-        val centerX = width * 0.5f
-        val centerY = height * 0.5f
 
         backgroundPaint.color = circleColor
 
         textPaint.getTextBounds(humidityText, 0, humidityText.length, textRect)
-        val textWidth = textPaint.measureText(humidityText)
-        val textHeight = textRect.height()
 
         canvas?.drawArc(
             60f,
@@ -77,11 +72,10 @@ class DiagramView @JvmOverloads constructor(
             true, backgroundPaint
         )
 
-        // draw text
         canvas?.drawText(
             humidityText,
-            20f,//textWidth / 2,
-            height - 20f,//textHeight / 2,
+            20f,
+            height - 20f,
             textPaint
         )
 

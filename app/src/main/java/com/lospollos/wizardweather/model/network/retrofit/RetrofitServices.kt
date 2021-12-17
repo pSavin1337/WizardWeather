@@ -7,13 +7,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object RetrofitServieces {
+object RetrofitServices {
 
-    val BASE_URL = "https://api.openweathermap.org/data/2.5/"
-    val coroutinesWeatherApi = getRetrofit(BASE_URL).create(WeatherApi::class.java)
+    private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+    val weatherApi: WeatherApi = getRetrofit().create(WeatherApi::class.java)
 
-    private fun getRetrofit(baseUrl: String) = Retrofit.Builder()
-        .baseUrl(baseUrl)
+    private fun getRetrofit() = Retrofit.Builder()
+        .baseUrl(BASE_URL)
         .client(getClient())
         .addConverterFactory(GsonConverterFactory.create())
         .build()

@@ -2,12 +2,9 @@ package com.lospollos.wizardweather.model.network.retrofit
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import com.bumptech.glide.RequestBuilder
 import com.google.gson.Gson
 import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.model.database.WeatherDBProvider
@@ -15,7 +12,7 @@ import com.lospollos.wizardweather.model.network.*
 import com.lospollos.wizardweather.model.network.mappers.EntityToModelMapper
 import retrofit2.Response
 
-class CoroutinesWeatherInteractor(
+class WeatherInteractor(
     private val mapper: EntityToModelMapper<WeatherSuccessModel, List<List<BaseItemAdapterItem>>>,
     private val errorMapper: EntityToModelMapper<WeatherErrorModel, NotFoundError>
 ) {
@@ -30,8 +27,8 @@ class CoroutinesWeatherInteractor(
         else {
             val weatherData: Result
             try {
-                val response = RetrofitServieces
-                    .coroutinesWeatherApi
+                val response = RetrofitServices
+                    .weatherApi
                     .loadWeatherByCityName(cityName)
                 weatherData = handleResponse(response, mapper, errorMapper)
 
