@@ -1,9 +1,13 @@
 package com.lospollos.wizardweather.view.services
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -12,6 +16,7 @@ import androidx.work.*
 import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.view.activities.MainActivity
 
 class WeatherNotificationWorker(context: Context, params: WorkerParameters)
     : CoroutineWorker(context, params) {
@@ -44,6 +49,7 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters)
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun showNotification(weatherInfo: String, cityName: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Weather Information"
@@ -56,10 +62,15 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters)
             notificationManager.createNotificationChannel(mChannel)
         }
 
+        val pendingIntent = Intent(applicationContext, MainActivity::class.java).let {
+            PendingIntent.getActivity(applicationContext, 0, it, FLAG_UPDATE_CURRENT)
+        }
+
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_weather_notif)
             .setContentTitle(cityName)
             .setContentText(weatherInfo)
+            .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 

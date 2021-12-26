@@ -47,7 +47,6 @@ class DiagramView @JvmOverloads constructor(
         val textColor = typedArray.getColor(R.styleable.DiagramView_textColor, Color.WHITE)
         circleColor = typedArray.getColor(R.styleable.DiagramView_circleColor, Color.BLUE)
 
-        // setup paint for drawing text
         textPaint.apply {
             color = textColor
             textSize = counterTextSize

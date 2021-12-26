@@ -12,9 +12,6 @@ import com.lospollos.wizardweather.view.fragments.WeatherCardsFragment
 import com.lospollos.wizardweather.viewmodel.ViewModel
 import android.widget.Toast
 
-
-
-
 class MainActivity : AppCompatActivity() {
 
     lateinit var selectedCity: String

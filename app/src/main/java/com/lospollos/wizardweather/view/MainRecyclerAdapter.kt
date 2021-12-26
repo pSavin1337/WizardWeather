@@ -1,7 +1,6 @@
 package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
-import android.app.NotificationManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import android.widget.TextView
 import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkManager
-import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.App.Companion.cities
 import com.lospollos.wizardweather.App.Companion.context
 import com.lospollos.wizardweather.R

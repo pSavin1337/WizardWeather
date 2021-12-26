@@ -5,8 +5,8 @@ import androidx.annotation.RequiresApi
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
 import com.lospollos.wizardweather.model.network.mappers.WeatherErrorMapper
 import com.lospollos.wizardweather.model.network.mappers.WeatherListItemMapper
-import com.lospollos.wizardweather.model.network.retrofit.WeatherInteractor
-import com.lospollos.wizardweather.model.network.retrofit.Result
+import com.lospollos.wizardweather.model.WeatherInteractor
+import com.lospollos.wizardweather.model.Result
 
 object NotificationInfoLoader {
 

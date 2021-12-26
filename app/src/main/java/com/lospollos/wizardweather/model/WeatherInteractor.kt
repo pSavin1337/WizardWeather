@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model.network.retrofit
+package com.lospollos.wizardweather.model
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -10,6 +10,7 @@ import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.model.database.WeatherDBProvider
 import com.lospollos.wizardweather.model.network.*
 import com.lospollos.wizardweather.model.network.mappers.EntityToModelMapper
+import com.lospollos.wizardweather.model.network.retrofit.RetrofitServices
 import retrofit2.Response
 
 class WeatherInteractor(
@@ -27,8 +28,7 @@ class WeatherInteractor(
         else {
             val weatherData: Result
             try {
-                val response = RetrofitServices
-                    .weatherApi
+                val response = RetrofitServices.weatherApi
                     .loadWeatherByCityName(cityName)
                 weatherData = handleResponse(response, mapper, errorMapper)
 
@@ -102,8 +102,8 @@ sealed class Result {
             List<Bitmap>?>) : Result()
 
     sealed class Error : Result() {
-        data class NotFound(val error: NotFoundError) : Result.Error()
-        data class Unknown(val error: String) : Result.Error()
-        object NoNetwork : Result.Error()
+        data class NotFound(val error: NotFoundError) : Error()
+        data class Unknown(val error: String) : Error()
+        object NoNetwork : Error()
     }
 }

@@ -1,6 +1,7 @@
 package com.lospollos.wizardweather
 
 object Constants {
+
     const val TEMP: Int = 0
     const val PRES: Int = 1
     const val HUMID: Int = 2

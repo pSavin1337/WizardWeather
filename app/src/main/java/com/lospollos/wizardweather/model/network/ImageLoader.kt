@@ -3,7 +3,7 @@ package com.lospollos.wizardweather.model.network
 import android.graphics.Bitmap
 import com.bumptech.glide.Glide
 import com.lospollos.wizardweather.App
-import com.lospollos.wizardweather.model.network.retrofit.Result
+import com.lospollos.wizardweather.model.Result
 
 
 object ImageLoader {
@@ -16,7 +16,7 @@ object ImageLoader {
                     Glide.with(App.context)
                         .asBitmap()
                         .load((result.items[i][5] as BaseItemAdapterItem.Weather).iconUrl)
-                        .submit()
+                        .submit(300, 300)
                         .get()
                 )
 
