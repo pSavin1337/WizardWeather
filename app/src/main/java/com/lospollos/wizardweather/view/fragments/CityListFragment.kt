@@ -1,5 +1,7 @@
 package com.lospollos.wizardweather.view.fragments
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -27,14 +29,20 @@ class CityListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? { //TODO: сделать нормальный интерфейс
+    ): View? {
         return inflater.inflate(R.layout.fragment_city_list, container, false)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        if(App.context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            view.background = App.context
+                .getDrawable(R.drawable.background_rounded_landscape_left)
+        else
+            view.background = App.context
+                .getDrawable(R.drawable.background_rounded)
         val adapter = MainRecyclerAdapter ({
 
             /*Start WeatherCardFragment*/
@@ -45,7 +53,9 @@ class CityListFragment : Fragment() {
 
             /*Start Service*/
 
-            WorkManager.getInstance(App.context).cancelAllWork()
+            WorkManager.getInstance(App.context).cancelAllWorkByTag(
+                "com.lospollos.wizardweather.view.services.WeatherNotificationWorker"
+            )
 
             val workRequest: WorkRequest
             val dataWeather = Data.Builder().putString("cityName", it1).build()

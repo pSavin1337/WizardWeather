@@ -1,15 +1,18 @@
 package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkManager
 import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.App.Companion.cities
+import com.lospollos.wizardweather.App.Companion.context
 import com.lospollos.wizardweather.R
 import java.util.*
 
@@ -19,6 +22,7 @@ class MainRecyclerAdapter(
     ) : RecyclerView.Adapter<MainRecyclerAdapter.MainViewHolder>(), ItemTouchHelperAdapter{
 
     private var selectedPosition: Int = -1
+    private val notificationManager = NotificationManagerCompat.from(context)
 
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var textView: TextView? = null
@@ -51,7 +55,10 @@ class MainRecyclerAdapter(
                 cities.forEach {
                     it.isFavorite = false
                 }
-                WorkManager.getInstance(App.context).cancelAllWork()
+                notificationManager.cancel(101)
+                WorkManager.getInstance(context).cancelAllWorkByTag(
+                    "com.lospollos.wizardweather.view.services.WeatherNotificationWorker"
+                )
             }
             else {
                 cities.forEach {

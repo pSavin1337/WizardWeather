@@ -23,6 +23,7 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters)
     @RequiresApi(Build.VERSION_CODES.M)
     override suspend fun doWork(): Result {
         return try {
+            notificationManager.cancel(NOTIFY_ID)
             val cityName = inputData.getString("cityName")
             val loadedInfo: List<List<BaseItemAdapterItem>>?
 
@@ -56,7 +57,7 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters)
         }
 
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_weather_notif)
             .setContentTitle(cityName)
             .setContentText(weatherInfo)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

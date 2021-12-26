@@ -10,11 +10,16 @@ import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.view.City
 import com.lospollos.wizardweather.view.fragments.WeatherCardsFragment
 import com.lospollos.wizardweather.viewmodel.ViewModel
+import android.widget.Toast
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var selectedCity: String
     private lateinit var viewModel: ViewModel
+    private var backPressed: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +57,15 @@ class MainActivity : AppCompatActivity() {
         selectedCity = cityName
         supportFragmentManager.beginTransaction()
             .replace(R.id.weather_cards_fragment, WeatherCardsFragment()).commit()
+    }
+
+    override fun onBackPressed() {
+        if (backPressed + 2000 > System.currentTimeMillis()) {
+            super.onBackPressed()
+        } else {
+            Toast.makeText(baseContext, getString(R.string.double_back), Toast.LENGTH_SHORT).show()
+        }
+        backPressed = System.currentTimeMillis()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

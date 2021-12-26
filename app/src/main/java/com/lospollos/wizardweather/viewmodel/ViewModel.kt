@@ -64,16 +64,23 @@ class ViewModel: ViewModel() {
                     errorMapper = WeatherErrorMapper()
                 ).execute(cityName = city)
             }
-            handleResult(result)
+            val loadedIcon = withContext(Dispatchers.IO) {
+                try {
+                    ImageLoader.loadImage(result as Result.Success)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            handleResult(result, loadedIcon)
             isLoading.value = false
         }
     }
 
-    private fun handleResult(result: Result) {
+    private fun handleResult(result: Result, loadedIcon: ArrayList<Bitmap>?) {
         when (result) {
             is Result.Success -> {
                 weatherItems.value = result.items
-                icon.value = ImageLoader.loadImage(result)
+                icon.value = loadedIcon!!
             }
             is Result.LoadedFromDB -> {
                 weatherItems.value = result.items.first!!

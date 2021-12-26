@@ -12,16 +12,19 @@
 
     <RadioButton
         android:id="@+id/radioButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:button="@android:drawable/btn_star_big_off" />
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:backgroundTint="@color/secondary_color"
+        android:button="@android:drawable/btn_star"
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/cityTextView"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/light_grey"
+        android:background="@color/primary_color"
         android:gravity="center"
+        android:textColor="@color/background"
         android:textSize="24sp" />
 
 

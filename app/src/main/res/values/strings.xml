@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">WizardWeather</string>
+    <string name="app_name">Wizard Weather</string>
     <string name="share_button_text">Отправить</string>
     <string name="weather_image_content_desc">Изображение погоды</string>
     <string name="back_button_text">Назад</string>
+    <string name="double_back">Для выхода нажмите ещё раз</string>
     <string-array name="cities">
         <item>Ульяновск</item>
         <item>Димитровград</item>

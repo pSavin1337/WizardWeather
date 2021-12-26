@@ -1,6 +1,7 @@
 package com.lospollos.wizardweather.view.fragments
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
 import com.lospollos.wizardweather.view.ViewPagerAdapter
