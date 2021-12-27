@@ -13,7 +13,6 @@ class App: Application() {
         super.onCreate()
         context = this
         database = Room.databaseBuilder(this, WeatherDB::class.java, "weather_db")
-            .fallbackToDestructiveMigration()
             .build()
     }
 

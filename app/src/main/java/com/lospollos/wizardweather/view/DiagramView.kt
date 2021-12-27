@@ -81,7 +81,7 @@ class DiagramView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val maxTextWidth = textPaint.measureText("Влажность: 100%")
+        val maxTextWidth = textPaint.measureText(" Влажность: 100% ")
 
         val desiredWidth = (maxTextWidth + paddingLeft.toFloat() + paddingRight.toFloat())
             .roundToInt()

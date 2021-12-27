@@ -57,11 +57,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (backPressed + 2000 > System.currentTimeMillis()) {
+        if (backPressed + 2000 > System.currentTimeMillis())
             super.onBackPressed()
-        } else {
+        else
             Toast.makeText(baseContext, getString(R.string.double_back), Toast.LENGTH_SHORT).show()
-        }
         backPressed = System.currentTimeMillis()
     }
 
