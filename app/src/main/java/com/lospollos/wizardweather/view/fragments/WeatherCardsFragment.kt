@@ -65,7 +65,7 @@ class WeatherCardsFragment : Fragment() {
             getIcon().observe(viewLifecycleOwner) {
                 adapter = ViewPagerAdapter(selectedCityName, {
 
-                    /* Open share menu by clicking on share button */
+                    /* Opens share menu by clicking on share button */
 
                     val sendIntent: Intent = Intent().apply {
                         action = Intent.ACTION_SEND
@@ -76,7 +76,7 @@ class WeatherCardsFragment : Fragment() {
                     startActivity(shareIntent)
                 }, {
 
-                    /* Close Weather Cards Fragment */
+                    /* Closes Weather Cards Fragment */
 
                     (activity as MainActivity).closeWeatherCardsFragment()
                 })
