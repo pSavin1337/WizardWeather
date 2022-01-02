@@ -6,25 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
-import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkManager
-import com.lospollos.wizardweather.App.Companion.cities
-import com.lospollos.wizardweather.App.Companion.context
 import com.lospollos.wizardweather.R
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainRecyclerAdapter(
-    val startWeatherCardsFragment: (cityName: String) -> Unit,
-    val startWeatherService: (cityName: String) -> Unit
-    ) : RecyclerView.Adapter<MainRecyclerAdapter.MainViewHolder>(), ItemTouchHelperAdapter{
+    private val cities: ArrayList<City>,
+    val onCityClick: (cityName: String) -> Unit,
+    val onFavoriteCityClick: (cityName: String) -> Unit,
+    val onFavoriteCityRepeatedClick: () -> Unit,
+    val onCityListChanged: (newCityList: ArrayList<City>) -> Unit
+) : RecyclerView.Adapter<MainRecyclerAdapter.MainViewHolder>(), ItemTouchHelperAdapter {
 
     private var selectedPosition: Int = -1
-    private val notificationManager = NotificationManagerCompat.from(context)
 
-    class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView: TextView? = null
         var favoriteCityButton: RadioButton? = null
+
         init {
             textView = itemView.findViewById(R.id.cityTextView)
             favoriteCityButton = itemView.findViewById(R.id.radioButton)
@@ -42,30 +42,25 @@ class MainRecyclerAdapter(
 
         holder.textView?.text = cities[position].cityName
         holder.textView?.setOnClickListener {
-            startWeatherCardsFragment(cities[position].cityName)
+            onCityClick(cities[position].cityName)
         }
 
         holder.favoriteCityButton?.isChecked = cities[holder.bindingAdapterPosition].isFavorite
 
         holder.favoriteCityButton?.setOnClickListener {
             selectedPosition = holder.bindingAdapterPosition
-            if(cities[selectedPosition].isFavorite) {
+            if (cities[selectedPosition].isFavorite) {
                 cities.forEach {
                     it.isFavorite = false
                 }
-                notificationManager.cancel(101)
-                WorkManager.getInstance(context).cancelAllWorkByTag(
-                    "com.lospollos.wizardweather.view.services.WeatherNotificationWorker"
-                )
-            }
-            else {
+                onFavoriteCityRepeatedClick()
+            } else {
                 cities.forEach {
                     it.isFavorite = false
                 }
                 cities[position].isFavorite = true
-                startWeatherService(cities[position].cityName)
+                onFavoriteCityClick(cities[position].cityName)
             }
-
             notifyDataSetChanged()
         }
     }
@@ -80,6 +75,8 @@ class MainRecyclerAdapter(
             for (i in fromPosition downTo toPosition + 1)
                 Collections.swap(cities, i, i - 1)
         notifyItemMoved(fromPosition, toPosition)
+        onCityListChanged(cities)
         return true
     }
+
 }

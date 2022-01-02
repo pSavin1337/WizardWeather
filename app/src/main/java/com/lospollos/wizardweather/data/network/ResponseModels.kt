@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model.network
+package com.lospollos.wizardweather.data.network
 
 sealed class BaseItemAdapterItem {
     data class Temperature(
@@ -30,7 +30,7 @@ sealed class BaseItemAdapterItem {
 
     data class Date(
         val date: String
-    ): BaseItemAdapterItem()
+    ) : BaseItemAdapterItem()
 
 }
 

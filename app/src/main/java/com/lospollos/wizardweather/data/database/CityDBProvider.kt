@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model.database
+package com.lospollos.wizardweather.data.database
 
 import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.view.City

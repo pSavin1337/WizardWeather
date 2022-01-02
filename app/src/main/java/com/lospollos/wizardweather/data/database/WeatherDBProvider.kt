@@ -1,11 +1,11 @@
-package com.lospollos.wizardweather.model.database
+package com.lospollos.wizardweather.data.database
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.Constants.dayCount
-import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -14,9 +14,11 @@ import java.io.InputStream
 object WeatherDBProvider {
     private val db: WeatherDB = App.database
 
-    fun insertWeatherForCity(weather: List<List<BaseItemAdapterItem>>,
-                             icons: ArrayList<Bitmap>,
-                             city: String) {
+    fun insertWeatherForCity(
+        weather: List<List<BaseItemAdapterItem>>,
+        icons: ArrayList<Bitmap>,
+        city: String
+    ) {
         val weatherModelForDB = ArrayList<EntityWeatherDB>()
         var i = 0
         val iconsLongArray: ArrayList<ByteArray> = ArrayList()
@@ -63,9 +65,13 @@ object WeatherDBProvider {
             list.add(BaseItemAdapterItem.Humidity(value = it.humidity))
             list.add(BaseItemAdapterItem.Wind(speed = it.windSpeed, degree = it.windDegree))
             list.add(BaseItemAdapterItem.Clouds(value = it.clouds))
-            list.add(BaseItemAdapterItem.Weather(id = it.weatherId,
-                description = it.weatherDescription,
-                iconUrl = ""))
+            list.add(
+                BaseItemAdapterItem.Weather(
+                    id = it.weatherId,
+                    description = it.weatherDescription,
+                    iconUrl = ""
+                )
+            )
             list.add(BaseItemAdapterItem.Date(date = it.date))
             weatherData.add(list)
             val inputStream: InputStream = ByteArrayInputStream(it.icon)

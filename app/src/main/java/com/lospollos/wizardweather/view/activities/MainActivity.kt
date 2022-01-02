@@ -1,60 +1,51 @@
 package com.lospollos.wizardweather.view.activities
 
 import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
-import com.lospollos.wizardweather.App
-import com.lospollos.wizardweather.R
-import com.lospollos.wizardweather.view.City
-import com.lospollos.wizardweather.view.fragments.WeatherCardsFragment
-import com.lospollos.wizardweather.viewmodel.ViewModel
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.lospollos.wizardweather.R
+import com.lospollos.wizardweather.view.fragments.CityListFragment
+import com.lospollos.wizardweather.view.fragments.WeatherCardsFragment
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var selectedCity: String
-    private lateinit var viewModel: ViewModel
     private var backPressed: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProvider(
-            this,
-            defaultViewModelProviderFactory)[ViewModel::class.java]
-        if(lifecycle.currentState == Lifecycle.State.INITIALIZED) {
-            viewModel.getCityList()
-            viewModel.getCityListLiveData().observe(this) { cityList ->
-                if (cityList?.isEmpty() == true) {
-                    resources?.getStringArray(R.array.cities)?.forEach {
-                        App.cities.add(City(it, false))
-                    }
-                } else {
-                    App.cities = cityList as ArrayList<City>
-                }
-            }
-        }
+        openCityListFragment()
+
         selectedCity = savedInstanceState?.getString("selectedCity").toString()
-        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
             setContentView(R.layout.activity_main_landscape)
         else
             setContentView(R.layout.activity_main)
     }
 
-    fun closeWeatherCardsFragment() {
+    fun closeWeatherCardsFragment() =
         supportFragmentManager.findFragmentById(R.id.weather_cards_fragment)?.let {
             supportFragmentManager.beginTransaction()
                 .remove(it).commit()
         }
-    }
 
     fun openWeatherCardsFragment(cityName: String) {
         selectedCity = cityName
         supportFragmentManager.beginTransaction()
             .replace(R.id.weather_cards_fragment, WeatherCardsFragment()).commit()
     }
+
+    private fun closeCityListFragment() =
+        supportFragmentManager.findFragmentById(R.id.city_list_fragment)?.let {
+            supportFragmentManager.beginTransaction()
+                .remove(it).commit()
+        }
+
+    private fun openCityListFragment() =
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.city_list_fragment, CityListFragment()).commit()
 
     override fun onBackPressed() {
         if (backPressed + 2000 > System.currentTimeMillis())
@@ -69,9 +60,9 @@ class MainActivity : AppCompatActivity() {
         outState.putString("selectedCity", selectedCity)
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.updateCityList(App.cities)
+    override fun onDestroy() {
+        super.onDestroy()
+        closeCityListFragment()
     }
 
 }

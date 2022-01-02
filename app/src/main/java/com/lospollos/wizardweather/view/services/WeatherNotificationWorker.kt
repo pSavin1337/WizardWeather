@@ -15,11 +15,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.R
-import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
 import com.lospollos.wizardweather.view.activities.MainActivity
 
-class WeatherNotificationWorker(context: Context, params: WorkerParameters)
-    : CoroutineWorker(context, params) {
+class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
+    CoroutineWorker(context, params) {
 
     private val CHANNEL_ID = "channelID"
     private val NOTIFY_ID = 101
@@ -37,7 +37,7 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters)
             } else {
                 return Result.failure()
             }
-            val weatherInfo: String = if(loadedInfo != null) {
+            val weatherInfo: String = if (loadedInfo != null) {
                 (loadedInfo[0][Constants.TEMP] as BaseItemAdapterItem.Temperature).temp
             } else {
                 NotificationInfoLoader.message.toString()

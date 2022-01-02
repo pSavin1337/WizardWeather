@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,15 +18,20 @@ import androidx.work.Data
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
-import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.R
+import com.lospollos.wizardweather.view.City
 import com.lospollos.wizardweather.view.ItemTouchHelperCallback
 import com.lospollos.wizardweather.view.MainRecyclerAdapter
 import com.lospollos.wizardweather.view.activities.MainActivity
 import com.lospollos.wizardweather.view.services.WeatherNotificationWorker
+import com.lospollos.wizardweather.viewmodel.CityListViewModel
 import java.util.concurrent.TimeUnit
 
 class CityListFragment : Fragment() {
+
+    private lateinit var notificationManager: NotificationManagerCompat
+    private lateinit var cityListViewModel: CityListViewModel
+    private var cities: ArrayList<City> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,44 +44,76 @@ class CityListFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(App.context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-            view.background = App.context
-                .getDrawable(R.drawable.background_rounded_landscape_left)
+        notificationManager = context?.let { NotificationManagerCompat.from(it) }!!
+        if (context?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            view.background = context
+                ?.getDrawable(R.drawable.background_rounded_landscape_left)
         else
-            view.background = App.context
-                .getDrawable(R.drawable.background_rounded)
-        val adapter = MainRecyclerAdapter ({
+            view.background = context
+                ?.getDrawable(R.drawable.background_rounded)
 
-            /*Start WeatherCardFragment*/
-
-            (activity as MainActivity).openWeatherCardsFragment(it)
-
-        }, { it1 ->
-
-            /*Start Service*/
-
-            WorkManager.getInstance(App.context).cancelAllWorkByTag(
-                "com.lospollos.wizardweather.view.services.WeatherNotificationWorker"
+        cityListViewModel = ViewModelProvider(
+            this,
+            defaultViewModelProviderFactory
+        )[CityListViewModel::class.java]
+        cityListViewModel.getCityList()
+        cityListViewModel.getCityListLiveData().observe(viewLifecycleOwner) { cityList ->
+            if (cityList?.isEmpty() == true) {
+                resources.getStringArray(R.array.cities).forEach {
+                    cities.add(City(it, false))
+                }
+            } else {
+                cities = cityList as ArrayList<City>
+            }
+            val adapter = MainRecyclerAdapter(
+                cities,
+                ::openWeatherCardsFragment,
+                ::openNotificationWorker,
+                ::closeNotificationWorker,
+                ::updateCityList
             )
 
-            val workRequest: WorkRequest
-            val dataWeather = Data.Builder().putString("cityName", it1).build()
+            val recyclerView: RecyclerView = view.findViewById(R.id.mainRecyclerView)
+            recyclerView.layoutManager = LinearLayoutManager(activity)
 
-            workRequest = PeriodicWorkRequest.Builder(
-                WeatherNotificationWorker::class.java, 1, TimeUnit.HOURS
-            ).setInputData(dataWeather).build()
-            WorkManager.getInstance(App.context).enqueue(workRequest)
+            val callback: ItemTouchHelper.Callback = ItemTouchHelperCallback(adapter)
+            val touchHelper = ItemTouchHelper(callback)
+            touchHelper.attachToRecyclerView(recyclerView)
 
-        })
+            recyclerView.adapter = adapter
+        }
+    }
 
-        val recyclerView : RecyclerView = view.findViewById(R.id.mainRecyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(activity)
+    private fun openWeatherCardsFragment(cityName: String) =
+        (activity as MainActivity).openWeatherCardsFragment(cityName)
 
-        val callback: ItemTouchHelper.Callback = ItemTouchHelperCallback(adapter)
-        val touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(recyclerView)
+    private fun openNotificationWorker(cityName: String) {
+        context?.let {
+            WorkManager.getInstance(it).cancelAllWorkByTag(
+                "com.lospollos.wizardweather.view.services.WeatherNotificationWorker"
+            )
+        }
 
-        recyclerView.adapter = adapter
+        val workRequest: WorkRequest
+        val dataWeather = Data.Builder().putString("cityName", cityName).build()
+
+        workRequest = PeriodicWorkRequest.Builder(
+            WeatherNotificationWorker::class.java, 1, TimeUnit.HOURS
+        ).setInputData(dataWeather).build()
+        context?.let { WorkManager.getInstance(it).enqueue(workRequest) }
+    }
+
+    private fun closeNotificationWorker() {
+        notificationManager.cancel(101)
+        context?.let {
+            WorkManager.getInstance(it).cancelAllWorkByTag(
+                "com.lospollos.wizardweather.view.services.WeatherNotificationWorker"
+            )
+        }
+    }
+
+    private fun updateCityList(newCityList: ArrayList<City>) {
+        cityListViewModel.updateCityList(newCityList)
     }
 
 }

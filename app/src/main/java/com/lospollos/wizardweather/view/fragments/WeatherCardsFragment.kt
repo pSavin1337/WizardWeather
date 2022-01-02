@@ -13,14 +13,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.lospollos.wizardweather.R
-import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
 import com.lospollos.wizardweather.view.ViewPagerAdapter
 import com.lospollos.wizardweather.view.activities.MainActivity
-import com.lospollos.wizardweather.viewmodel.ViewModel
+import com.lospollos.wizardweather.viewmodel.LoadWeatherViewModel
 
 class WeatherCardsFragment : Fragment() {
 
-    private lateinit var viewModel: ViewModel
+    private lateinit var loadWeatherViewModel: LoadWeatherViewModel
     private lateinit var adapter: ViewPagerAdapter
     private lateinit var selectedCityName: String
     private lateinit var viewPager: ViewPager2
@@ -37,24 +37,24 @@ class WeatherCardsFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(
+        loadWeatherViewModel = ViewModelProvider(
             this,
             defaultViewModelProviderFactory
-        )[ViewModel::class.java]
+        )[LoadWeatherViewModel::class.java]
         selectedCityName = (activity as MainActivity).selectedCity
         progressBar = view.findViewById(R.id.progressBar)
         viewPager = view.findViewById(R.id.viewPager)
         getData()
-        viewModel.loadWeather(selectedCityName)
+        loadWeatherViewModel.loadWeather(selectedCityName)
     }
 
     private fun getData() {
-        with(viewModel) {
+        with(loadWeatherViewModel) {
             getWeatherItems().observe(viewLifecycleOwner) {
                 apiResponse = it
             }
             getIsLoading().observe(viewLifecycleOwner) {
-                if(it) {
+                if (it) {
                     viewPager.visibility = View.INVISIBLE
                     progressBar.visibility = View.VISIBLE
                 } else {
@@ -63,23 +63,8 @@ class WeatherCardsFragment : Fragment() {
                 }
             }
             getIcon().observe(viewLifecycleOwner) {
-                adapter = ViewPagerAdapter(selectedCityName, {
-
-                    /* Opens share menu by clicking on share button */
-
-                    val sendIntent: Intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, it)
-                        type = "text/plain"
-                    }
-                    val shareIntent = Intent.createChooser(sendIntent, null)
-                    startActivity(shareIntent)
-                }, {
-
-                    /* Closes Weather Cards Fragment */
-
-                    (activity as MainActivity).closeWeatherCardsFragment()
-                })
+                adapter =
+                    ViewPagerAdapter(selectedCityName, ::openShareMenu, ::closeWeatherCardsFragment)
                 viewPager.adapter = adapter
                 adapter.icon = it
                 adapter.apiResponse = apiResponse
@@ -90,5 +75,17 @@ class WeatherCardsFragment : Fragment() {
             }
         }
     }
+
+    private fun openShareMenu(shareText: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
+    }
+
+    private fun closeWeatherCardsFragment() = (activity as MainActivity).closeWeatherCardsFragment()
 
 }

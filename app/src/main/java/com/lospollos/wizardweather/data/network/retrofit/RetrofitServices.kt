@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model.network.retrofit
+package com.lospollos.wizardweather.data.network.retrofit
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

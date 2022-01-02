@@ -9,7 +9,6 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/city_list_fragment"
-        android:name="com.lospollos.wizardweather.view.fragments.CityListFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="end"
@@ -17,8 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/weather_cards_fragment"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_city_list" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/weather_cards_fragment"

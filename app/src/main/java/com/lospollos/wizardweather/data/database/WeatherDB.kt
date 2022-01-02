@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model.database
+package com.lospollos.wizardweather.data.database
 
 import androidx.room.RoomDatabase
 import androidx.room.Database

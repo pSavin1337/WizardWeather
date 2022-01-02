@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model.network
+package com.lospollos.wizardweather.data.network
 
 import com.google.gson.annotations.SerializedName
 

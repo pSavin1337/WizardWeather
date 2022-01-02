@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model
+package com.lospollos.wizardweather.data
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,10 +7,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.lospollos.wizardweather.App
-import com.lospollos.wizardweather.model.database.WeatherDBProvider
-import com.lospollos.wizardweather.model.network.*
-import com.lospollos.wizardweather.model.network.mappers.EntityToModelMapper
-import com.lospollos.wizardweather.model.network.retrofit.RetrofitServices
+import com.lospollos.wizardweather.data.database.WeatherDBProvider
+import com.lospollos.wizardweather.data.network.*
+import com.lospollos.wizardweather.data.network.mappers.EntityToModelMapper
+import com.lospollos.wizardweather.data.network.retrofit.RetrofitServices
 import retrofit2.Response
 
 class WeatherInteractor(
@@ -36,7 +36,8 @@ class WeatherInteractor(
                 WeatherDBProvider.insertWeatherForCity(
                     (weatherData as Result.Success).items,
                     ImageLoader.loadImage(weatherData),
-                    cityName)
+                    cityName
+                )
             } catch (e: Exception) {
                 return handleError(e)
             }
@@ -98,8 +99,10 @@ class WeatherInteractor(
 sealed class Result {
     data class Success(val items: List<List<BaseItemAdapterItem>>) : Result()
 
-    data class LoadedFromDB(val items: Pair<List<List<BaseItemAdapterItem>>?,
-            List<Bitmap>?>) : Result()
+    data class LoadedFromDB(
+        val items: Pair<List<List<BaseItemAdapterItem>>?,
+                List<Bitmap>?>
+    ) : Result()
 
     sealed class Error : Result() {
         data class NotFound(val error: NotFoundError) : Error()

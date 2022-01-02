@@ -2,11 +2,11 @@ package com.lospollos.wizardweather.view.services
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
-import com.lospollos.wizardweather.model.network.mappers.WeatherErrorMapper
-import com.lospollos.wizardweather.model.network.mappers.WeatherListItemMapper
-import com.lospollos.wizardweather.model.WeatherInteractor
-import com.lospollos.wizardweather.model.Result
+import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.data.network.mappers.WeatherErrorMapper
+import com.lospollos.wizardweather.data.network.mappers.WeatherListItemMapper
+import com.lospollos.wizardweather.data.WeatherInteractor
+import com.lospollos.wizardweather.data.Result
 
 object NotificationInfoLoader {
 

@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.model.database
+package com.lospollos.wizardweather.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -15,7 +15,7 @@ interface WeatherDao {
     fun deleteOldWeatherOfCity(weather: List<EntityWeatherDB>)
 
     @Query("SELECT * FROM entityweatherdb WHERE city LIKE :cityName")
-    fun getWeatherByCityName(cityName: String) : List<EntityWeatherDB>
+    fun getWeatherByCityName(cityName: String): List<EntityWeatherDB>
 
 
     @Insert

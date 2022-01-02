@@ -6,7 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ItemTouchHelperCallback(
     private val adapter:
-    MainRecyclerAdapter):
+    MainRecyclerAdapter
+) :
     ItemTouchHelper.Callback() {
 
     override fun isLongPressDragEnabled(): Boolean = true
@@ -33,6 +34,6 @@ class ItemTouchHelperCallback(
         return true
     }
 
-    override fun onSwiped(p0: RecyclerView.ViewHolder, p1: Int){}
+    override fun onSwiped(p0: RecyclerView.ViewHolder, p1: Int) {}
 
 }

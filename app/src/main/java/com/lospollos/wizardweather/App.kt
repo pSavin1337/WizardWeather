@@ -4,10 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.lospollos.wizardweather.model.database.WeatherDB
-import com.lospollos.wizardweather.view.City
+import com.lospollos.wizardweather.data.database.WeatherDB
 
-class App: Application() {
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -20,11 +19,10 @@ class App: Application() {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
             private set
+
         @SuppressLint("StaticFieldLeak")
         lateinit var database: WeatherDB
             private set
-        @SuppressLint("StaticFieldLeak")
-        var cities: ArrayList<City> = ArrayList()
     }
 
 }

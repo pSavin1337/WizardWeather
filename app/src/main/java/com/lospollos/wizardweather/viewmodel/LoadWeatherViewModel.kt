@@ -7,31 +7,25 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.lospollos.wizardweather.model.database.CityDBProvider
-import com.lospollos.wizardweather.model.network.BaseItemAdapterItem
-import com.lospollos.wizardweather.model.network.ImageLoader
-import com.lospollos.wizardweather.model.network.mappers.WeatherErrorMapper
-import com.lospollos.wizardweather.model.network.mappers.WeatherListItemMapper
-import com.lospollos.wizardweather.model.WeatherInteractor
-import com.lospollos.wizardweather.model.Result
-import com.lospollos.wizardweather.view.City
+import com.lospollos.wizardweather.data.Result
+import com.lospollos.wizardweather.data.WeatherInteractor
+import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.data.network.ImageLoader
+import com.lospollos.wizardweather.data.network.mappers.WeatherErrorMapper
+import com.lospollos.wizardweather.data.network.mappers.WeatherListItemMapper
 import kotlinx.coroutines.*
 
-class ViewModel: ViewModel() {
+class LoadWeatherViewModel : ViewModel() {
 
     private val weatherItems = MutableLiveData<List<List<BaseItemAdapterItem>>>()
     private val message = MutableLiveData<String>()
     private val isLoading = MutableLiveData(false)
     private val icon = MutableLiveData<List<Bitmap>>()
 
-    private val cityList = MutableLiveData<List<City>?>()
-
     fun getWeatherItems(): LiveData<List<List<BaseItemAdapterItem>>> = weatherItems
     fun getMessage(): LiveData<String> = message
     fun getIsLoading(): LiveData<Boolean> = isLoading
     fun getIcon(): LiveData<List<Bitmap>> = icon
-
-    fun getCityListLiveData(): LiveData<List<City>?> = cityList
 
     private val job = Job()
     private val vmScope = CoroutineScope(job + Dispatchers.Main.immediate)
@@ -39,18 +33,6 @@ class ViewModel: ViewModel() {
     override fun onCleared() {
         super.onCleared()
         vmScope.cancel()
-    }
-
-    fun getCityList() = vmScope.launch {
-        cityList.value = withContext(Dispatchers.IO) {
-            CityDBProvider.getCityList()
-        }
-    }
-
-    fun updateCityList(cityList: List<City>) = vmScope.launch {
-        withContext(Dispatchers.IO) {
-            CityDBProvider.updateCityList(cityList)
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

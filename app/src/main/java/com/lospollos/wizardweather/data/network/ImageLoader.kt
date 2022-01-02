@@ -1,16 +1,16 @@
-package com.lospollos.wizardweather.model.network
+package com.lospollos.wizardweather.data.network
 
 import android.graphics.Bitmap
 import com.bumptech.glide.Glide
 import com.lospollos.wizardweather.App
-import com.lospollos.wizardweather.model.Result
+import com.lospollos.wizardweather.data.Result
 
 
 object ImageLoader {
 
-    fun loadImage(result: Result.Success): ArrayList<Bitmap>{
+    fun loadImage(result: Result.Success): ArrayList<Bitmap> {
         val iconWeatherList: ArrayList<Bitmap> = ArrayList(5)
-        for(i in 0..4)
+        for (i in 0..4)
             iconWeatherList
                 .add(
                     Glide.with(App.context)
