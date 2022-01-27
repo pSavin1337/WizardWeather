@@ -11,7 +11,8 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
-        database = Room.databaseBuilder(this, WeatherDB::class.java, "weather_db")
+        database = Room
+            .databaseBuilder(this, WeatherDB::class.java, getString(R.string.db_name))
             .build()
     }
 

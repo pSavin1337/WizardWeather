@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.lospollos.wizardweather.R
-import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.view.ViewPagerAdapter
 import com.lospollos.wizardweather.view.activities.MainActivity
 import com.lospollos.wizardweather.viewmodel.LoadWeatherViewModel
@@ -25,7 +25,7 @@ class WeatherCardsFragment : Fragment() {
     private lateinit var selectedCityName: String
     private lateinit var viewPager: ViewPager2
     private lateinit var progressBar: ProgressBar
-    private lateinit var apiResponse: List<List<BaseItemAdapterItem>>
+    private lateinit var apiResponse: List<WeatherResponseModel>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,8 +63,10 @@ class WeatherCardsFragment : Fragment() {
                 }
             }
             getIcon().observe(viewLifecycleOwner) {
-                adapter =
-                    ViewPagerAdapter(selectedCityName, ::openShareMenu, ::closeWeatherCardsFragment)
+                adapter = ViewPagerAdapter(
+                    selectedCityName,
+                    loadWeatherViewModel::openShareMenu,
+                    ::closeWeatherCardsFragment)
                 viewPager.adapter = adapter
                 adapter.icon = it
                 adapter.apiResponse = apiResponse
@@ -74,16 +76,6 @@ class WeatherCardsFragment : Fragment() {
                 (activity as MainActivity).closeWeatherCardsFragment()
             }
         }
-    }
-
-    private fun openShareMenu(shareText: String) {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, shareText)
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
     }
 
     private fun closeWeatherCardsFragment() = (activity as MainActivity).closeWeatherCardsFragment()

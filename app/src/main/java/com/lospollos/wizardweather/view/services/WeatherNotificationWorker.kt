@@ -13,9 +13,9 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
-import com.lospollos.wizardweather.Constants
+import com.lospollos.wizardweather.App.Companion.context
 import com.lospollos.wizardweather.R
-import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.view.activities.MainActivity
 
 class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
@@ -30,7 +30,7 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
         return try {
             notificationManager.cancel(NOTIFY_ID)
             val cityName = inputData.getString("cityName")
-            val loadedInfo: List<List<BaseItemAdapterItem>>?
+            val loadedInfo: List<WeatherResponseModel>?
 
             if (cityName != null) {
                 loadedInfo = NotificationInfoLoader.loadWeather(cityName)
@@ -38,7 +38,7 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
                 return Result.failure()
             }
             val weatherInfo: String = if (loadedInfo != null) {
-                (loadedInfo[0][Constants.TEMP] as BaseItemAdapterItem.Temperature).temp
+                loadedInfo[0].temp
             } else {
                 NotificationInfoLoader.message.toString()
             }
@@ -52,8 +52,8 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun showNotification(weatherInfo: String, cityName: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Weather Information"
-            val descriptionText = "Information about temperature in your city"
+            val name = context.getString(R.string.notification_channel_name)
+            val descriptionText = context.getString(R.string.notification_channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
             mChannel.description = descriptionText

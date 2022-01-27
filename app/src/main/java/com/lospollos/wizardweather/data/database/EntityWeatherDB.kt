@@ -1,6 +1,5 @@
 package com.lospollos.wizardweather.data.database
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -18,8 +17,7 @@ class EntityWeatherDB(
     var clouds: String,
     var weatherId: Int,
     var weatherDescription: String,
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
-    var icon: ByteArray
+    var icon: String
 )
 
 @Entity

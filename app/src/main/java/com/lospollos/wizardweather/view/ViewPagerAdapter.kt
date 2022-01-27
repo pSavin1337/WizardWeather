@@ -11,9 +11,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.lospollos.wizardweather.App.Companion.context
-import com.lospollos.wizardweather.Constants
+import com.lospollos.wizardweather.Constants.dayCount
 import com.lospollos.wizardweather.R
-import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
+import com.lospollos.wizardweather.data.network.WeatherResponseModel
 
 class ViewPagerAdapter(
     private val cityName: String?,
@@ -22,7 +22,7 @@ class ViewPagerAdapter(
 ) :
     RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
 
-    lateinit var apiResponse: List<List<BaseItemAdapterItem>>
+    lateinit var apiResponse: List<WeatherResponseModel>
     lateinit var icon: List<Bitmap>
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -58,23 +58,17 @@ class ViewPagerAdapter(
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
-        val temperature = (apiResponse[position][Constants.TEMP] as BaseItemAdapterItem.Temperature)
-            .temp
-        val pressure =
-            (apiResponse[position][Constants.PRES] as BaseItemAdapterItem.Pressure).value
-        val windSpeed =
-            (apiResponse[position][Constants.WIND] as BaseItemAdapterItem.Wind).speed
-        val weatherDate =
-            (apiResponse[position][Constants.DATE] as BaseItemAdapterItem.Date).date
+        val temperature = apiResponse[position].temp
+        val pressure = apiResponse[position].pressure
+        val windSpeed = apiResponse[position].windSpeed
+        val weatherDate = apiResponse[position].date
         holder.image?.setImageBitmap(icon[position])
         holder.textView?.text =
             if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
                 "$cityName\n$temperature\n$pressure\n$windSpeed\n\n$weatherDate"
             else
                 "$cityName\n$temperature"
-        holder.diagramView?.humidity =
-            (apiResponse[position][Constants.HUMID] as BaseItemAdapterItem.Humidity)
-                .value.split(" ")[1].toInt()
+        holder.diagramView?.humidity = apiResponse[position].humidity.split(" ")[1].toInt()
         holder.shareButton?.setOnClickListener {
             onShareButtonClick("$cityName\n$temperature\n$weatherDate")
         }
@@ -83,10 +77,6 @@ class ViewPagerAdapter(
         }
     }
 
-    override fun getItemCount(): Int = daysCount
-
-    companion object {
-        const val daysCount: Int = 5
-    }
+    override fun getItemCount(): Int = dayCount
 
 }

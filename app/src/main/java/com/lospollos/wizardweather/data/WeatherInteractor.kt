@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.lospollos.wizardweather.App
+import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.data.database.WeatherDBProvider
 import com.lospollos.wizardweather.data.network.*
 import com.lospollos.wizardweather.data.network.mappers.EntityToModelMapper
@@ -14,14 +15,15 @@ import com.lospollos.wizardweather.data.network.retrofit.RetrofitServices
 import retrofit2.Response
 
 class WeatherInteractor(
-    private val mapper: EntityToModelMapper<WeatherSuccessModel, List<List<BaseItemAdapterItem>>>,
+    private val mapper: EntityToModelMapper<WeatherSuccessModel, List<WeatherResponseModel>>,
     private val errorMapper: EntityToModelMapper<WeatherErrorModel, NotFoundError>
 ) {
     @RequiresApi(Build.VERSION_CODES.M)
     suspend fun execute(cityName: String): Result {
         if (!isNetworkAvailable())
-            return if (App.database.weatherDao.getWeatherByCityName(cityName).isEmpty())
+            return if (App.database.weatherDao.getWeatherByCityName(cityName).isEmpty()) {
                 Result.Error.NoNetwork
+            }
             else {
                 Result.LoadedFromDB(WeatherDBProvider.getWeatherByCityName(cityName))
             }
@@ -39,7 +41,10 @@ class WeatherInteractor(
                     cityName
                 )
             } catch (e: Exception) {
-                return handleError(e)
+                return Result.Error.Unknown(
+                    error = e.localizedMessage ?: e.message
+                    ?: App.context.getString(R.string.unknown_error)
+                )
             }
             return weatherData
         }
@@ -53,22 +58,28 @@ class WeatherInteractor(
 
     private fun handleResponse(
         response: Response<WeatherSuccessModel>,
-        mapper: EntityToModelMapper<WeatherSuccessModel, List<List<BaseItemAdapterItem>>>,
+        mapper: EntityToModelMapper<WeatherSuccessModel, List<WeatherResponseModel>>,
         errorMapper: EntityToModelMapper<WeatherErrorModel, NotFoundError>
     ): Result {
         return if (response.isSuccessful) {
             val body = response.body()
             if (body == null)
                 try {
-                    Result.Error.Unknown("Empty body")
+                    Result.Error.Unknown(App.context.getString(R.string.empty_body))
                 } catch (e: Exception) {
-                    handleError(e)
+                    Result.Error.Unknown(
+                        error = e.localizedMessage ?: e.message
+                        ?: App.context.getString(R.string.unknown_error)
+                    )
                 }
             else
                 try {
                     Result.Success(mapper.mapEntity(body))
                 } catch (e: Exception) {
-                    handleError(e)
+                    Result.Error.Unknown(
+                        error = e.localizedMessage ?: e.message
+                        ?: App.context.getString(R.string.unknown_error)
+                    )
                 }
         } else
             handleResponseError(response, errorMapper)
@@ -86,22 +97,19 @@ class WeatherInteractor(
                 )
             )
             else -> Result.Error.Unknown(
-                error = response.errorBody()?.string() ?: "Unknown Error"
+                error = response.errorBody()?.string() ?: App.context.getString(
+                    R.string.unknown_error
+                )
             )
         }
     }
-
-    private fun handleError(e: Throwable): Result.Error =
-        Result.Error.Unknown(error = e.localizedMessage ?: e.message ?: "Unknown Error")
-
 }
 
 sealed class Result {
-    data class Success(val items: List<List<BaseItemAdapterItem>>) : Result()
+    data class Success(val items: List<WeatherResponseModel>) : Result()
 
     data class LoadedFromDB(
-        val items: Pair<List<List<BaseItemAdapterItem>>?,
-                List<Bitmap>?>
+        val items: List<WeatherResponseModel>?
     ) : Result()
 
     sealed class Error : Result() {

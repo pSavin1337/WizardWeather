@@ -1,47 +1,33 @@
 package com.lospollos.wizardweather.data.database
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import com.lospollos.wizardweather.App
-import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.Constants.dayCount
-import com.lospollos.wizardweather.data.network.BaseItemAdapterItem
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-
+import com.lospollos.wizardweather.data.network.WeatherResponseModel
 
 object WeatherDBProvider {
     private val db: WeatherDB = App.database
 
     fun insertWeatherForCity(
-        weather: List<List<BaseItemAdapterItem>>,
-        icons: ArrayList<Bitmap>,
+        weather: List<WeatherResponseModel>,
+        icons: ArrayList<String>,
         city: String
     ) {
         val weatherModelForDB = ArrayList<EntityWeatherDB>()
         var i = 0
-        val iconsLongArray: ArrayList<ByteArray> = ArrayList()
-        icons.forEach {
-            val stream = ByteArrayOutputStream()
-            it.compress(Bitmap.CompressFormat.PNG, 100, stream)
-            iconsLongArray.add(stream.toByteArray())
-        }
         weather.forEach {
             weatherModelForDB.add(
                 EntityWeatherDB(
                     city = city,
-                    date = (it[Constants.DATE] as BaseItemAdapterItem.Date).date,
-                    temperature = (it[Constants.TEMP] as BaseItemAdapterItem.Temperature).temp,
-                    pressure = (it[Constants.PRES] as BaseItemAdapterItem.Pressure).value,
-                    humidity = (it[Constants.HUMID] as BaseItemAdapterItem.Humidity).value,
-                    windSpeed = (it[Constants.WIND] as BaseItemAdapterItem.Wind).speed,
-                    windDegree = (it[Constants.WIND] as BaseItemAdapterItem.Wind).degree,
-                    clouds = (it[Constants.CLOUDS] as BaseItemAdapterItem.Clouds).value,
-                    weatherId = (it[Constants.WEATHER] as BaseItemAdapterItem.Weather).id,
-                    weatherDescription = (it[Constants.WEATHER] as BaseItemAdapterItem.Weather)
-                        .description,
-                    icon = iconsLongArray[i]
+                    date = it.date,
+                    temperature = it.temp,
+                    pressure = it.pressure,
+                    humidity = it.humidity,
+                    windSpeed = it.windSpeed,
+                    windDegree = it.windDegree,
+                    clouds = it.clouds,
+                    weatherId = it.weatherId,
+                    weatherDescription = it.weatherDescription,
+                    icon = icons[i]
                 )
             )
             i++
@@ -53,33 +39,26 @@ object WeatherDBProvider {
         db.weatherDao.deleteOldWeatherOfCity(getWeatherByCityNameInEntity(city))
     }
 
-    fun getWeatherByCityName(city: String): Pair<List<List<BaseItemAdapterItem>>,
-            List<Bitmap>> {
+    fun getWeatherByCityName(city: String): List<WeatherResponseModel> {
         val weatherInEntity = db.weatherDao.getWeatherByCityName(city)
-        val weatherData: ArrayList<ArrayList<BaseItemAdapterItem>> = ArrayList(dayCount)
-        val icons: ArrayList<Bitmap> = ArrayList()
+        val weatherData: ArrayList<WeatherResponseModel> = ArrayList(dayCount)
         weatherInEntity.forEach {
-            val list: ArrayList<BaseItemAdapterItem> = ArrayList(7)
-            list.add(BaseItemAdapterItem.Temperature(temp = it.temperature))
-            list.add(BaseItemAdapterItem.Pressure(value = it.pressure))
-            list.add(BaseItemAdapterItem.Humidity(value = it.humidity))
-            list.add(BaseItemAdapterItem.Wind(speed = it.windSpeed, degree = it.windDegree))
-            list.add(BaseItemAdapterItem.Clouds(value = it.clouds))
-            list.add(
-                BaseItemAdapterItem.Weather(
-                    id = it.weatherId,
-                    description = it.weatherDescription,
-                    iconUrl = ""
+            weatherData.add(
+                WeatherResponseModel(
+                    it.temperature,
+                    it.pressure,
+                    it.humidity,
+                    it.windSpeed,
+                    it.windDegree,
+                    it.clouds,
+                    it.weatherId,
+                    it.weatherDescription,
+                    it.icon,
+                    it.date
                 )
             )
-            list.add(BaseItemAdapterItem.Date(date = it.date))
-            weatherData.add(list)
-            val inputStream: InputStream = ByteArrayInputStream(it.icon)
-            val options = BitmapFactory.Options()
-            BitmapFactory.decodeStream(inputStream, null, options)
-                ?.let { it1 -> icons.add(it1) }
         }
-        return Pair(weatherData, icons)
+        return weatherData
     }
 
     private fun getWeatherByCityNameInEntity(city: String): List<EntityWeatherDB> {

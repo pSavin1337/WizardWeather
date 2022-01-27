@@ -1,9 +1,26 @@
 <resources>
+
     <string name="app_name">Wizard Weather</string>
     <string name="share_button_text">Отправить</string>
     <string name="weather_image_content_desc">Изображение погоды</string>
     <string name="back_button_text">Назад</string>
     <string name="double_back">Для выхода нажмите ещё раз</string>
+    <string name="fav_city_but_cont_desc">Выбрать данный город для получения погоды</string>
+
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="empty_body">Empty body</string>
+    <string name="no_network">Нет сети</string>
+
+    <string name="worker_tag">
+        com.lospollos.wizardweather.view.services.WeatherNotificationWorker
+    </string>
+    <string name="notification_channel_name">Weather Information</string>
+    <string name="notification_channel_description">
+        Information about temperature in your city
+    </string>
+
+    <string name="db_name">weather_db</string>
+
     <string-array name="cities">
         <item>Ульяновск</item>
         <item>Димитровград</item>
@@ -32,5 +49,5 @@
         <item>Ревда</item>
         <item>Иваново</item>
     </string-array>
-    <string name="fav_city_but_cont_desc">Выбрать данный город для получения погоды</string>
+
 </resources>

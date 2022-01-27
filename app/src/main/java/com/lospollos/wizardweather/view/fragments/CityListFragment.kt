@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit
 
 class CityListFragment : Fragment() {
 
-    private lateinit var notificationManager: NotificationManagerCompat
     private lateinit var cityListViewModel: CityListViewModel
     private var cities: ArrayList<City> = ArrayList()
 
@@ -44,7 +43,6 @@ class CityListFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        notificationManager = context?.let { NotificationManagerCompat.from(it) }!!
         if (context?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE)
             view.background = context
                 ?.getDrawable(R.drawable.background_rounded_landscape_left)
@@ -68,9 +66,9 @@ class CityListFragment : Fragment() {
             val adapter = MainRecyclerAdapter(
                 cities,
                 ::openWeatherCardsFragment,
-                ::openNotificationWorker,
-                ::closeNotificationWorker,
-                ::updateCityList
+                cityListViewModel::openNotificationWorker,
+                cityListViewModel::closeNotificationWorker,
+                cityListViewModel::updateCityList
             )
 
             val recyclerView: RecyclerView = view.findViewById(R.id.mainRecyclerView)
@@ -86,34 +84,5 @@ class CityListFragment : Fragment() {
 
     private fun openWeatherCardsFragment(cityName: String) =
         (activity as MainActivity).openWeatherCardsFragment(cityName)
-
-    private fun openNotificationWorker(cityName: String) {
-        context?.let {
-            WorkManager.getInstance(it).cancelAllWorkByTag(
-                "com.lospollos.wizardweather.view.services.WeatherNotificationWorker"
-            )
-        }
-
-        val workRequest: WorkRequest
-        val dataWeather = Data.Builder().putString("cityName", cityName).build()
-
-        workRequest = PeriodicWorkRequest.Builder(
-            WeatherNotificationWorker::class.java, 1, TimeUnit.HOURS
-        ).setInputData(dataWeather).build()
-        context?.let { WorkManager.getInstance(it).enqueue(workRequest) }
-    }
-
-    private fun closeNotificationWorker() {
-        notificationManager.cancel(101)
-        context?.let {
-            WorkManager.getInstance(it).cancelAllWorkByTag(
-                "com.lospollos.wizardweather.view.services.WeatherNotificationWorker"
-            )
-        }
-    }
-
-    private fun updateCityList(newCityList: ArrayList<City>) {
-        cityListViewModel.updateCityList(newCityList)
-    }
 
 }
