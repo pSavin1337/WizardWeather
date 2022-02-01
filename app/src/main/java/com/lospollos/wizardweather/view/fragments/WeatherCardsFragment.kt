@@ -41,7 +41,7 @@ class WeatherCardsFragment : Fragment() {
             this,
             defaultViewModelProviderFactory
         )[LoadWeatherViewModel::class.java]
-        selectedCityName = (activity as MainActivity).selectedCity
+        selectedCityName = arguments?.getString("cityName").toString()
         progressBar = view.findViewById(R.id.progressBar)
         viewPager = view.findViewById(R.id.viewPager)
         getData()

@@ -33,6 +33,10 @@ android {
 
 dependencies {
 
+    implementation("androidx.navigation:navigation-fragment-ktx:2.4.0")
+    implementation("androidx.navigation:navigation-ui-ktx:2.4.0")
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.4.0")
+
     implementation("androidx.fragment:fragment-ktx:1.4.0")
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

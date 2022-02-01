@@ -5,20 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_background"
-    tools:context=".view.activities.MainActivity">
+    tools:context=".view.activities.MainActivity"
+    tools:ignore="MissingDefaultResource">
 
-    <androidx.fragment.app.FragmentContainerView
+    <fragment
         android:id="@+id/city_list_fragment"
+        android:name="com.lospollos.wizardweather.view.fragments.CityListFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="end"
         android:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/weather_cards_fragment"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.fragment.app.FragmentContainerView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_city_list" />
+
+    <fragment
         android:id="@+id/weather_cards_fragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -27,7 +31,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/city_list_fragment"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.121" />
+        app:layout_constraintVertical_bias="0.121"
+
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph_land"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
