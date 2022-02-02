@@ -1,4 +1,4 @@
-package com.lospollos.wizardweather.data.network
+package com.lospollos.wizardweather.data
 
 import android.content.ContentValues
 import android.graphics.Bitmap
@@ -6,24 +6,40 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
-import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.App.Companion.context
 import com.lospollos.wizardweather.Constants.dayCount
-import com.lospollos.wizardweather.data.Result
+import io.reactivex.Observable
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.util.*
+import kotlin.collections.ArrayList
 
 object ImageLoader {
 
     private var i = 0
 
-    private fun getIndex(): Int {
-        return ++i
-    }
+    fun loadIcons(result: Result): Observable<ArrayList<Bitmap>> =
+        when (result) {
+            is Result.Success -> {
+                val imageLinks = loadImage(result)
+                Observable.just(loadImageFromStorage(imageLinks))
+            }
+            is Result.LoadedFromDB -> {
+                val imageLinks: ArrayList<String> = ArrayList(dayCount)
+                for (resultItem in result.items!!) {
+                    imageLinks.add(resultItem.weatherIconUrl)
+                }
+                Observable.just(loadImageFromStorage(imageLinks))
+            }
+            is Result.Error -> {
+                Observable.just(ArrayList(0))
+            }
+        }
+
+    private fun getIndex() = ++i
 
     private fun saveImage(image: Bitmap): String? {
         var savedImagePath: String? = null
@@ -104,7 +120,7 @@ object ImageLoader {
         return iconWeatherList
     }
 
-    fun loadImageFromStorage(links: ArrayList<String>): ArrayList<Bitmap> {
+    private fun loadImageFromStorage(links: ArrayList<String>): ArrayList<Bitmap> {
         val loadedIcons: ArrayList<Bitmap> = ArrayList(dayCount)
         for (link in links)
             loadedIcons.add(

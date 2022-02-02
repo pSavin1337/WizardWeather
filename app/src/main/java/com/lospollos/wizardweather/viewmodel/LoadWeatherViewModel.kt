@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,10 +14,14 @@ import com.lospollos.wizardweather.Constants.dayCount
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.data.Result
 import com.lospollos.wizardweather.data.WeatherInteractor
-import com.lospollos.wizardweather.data.network.ImageLoader
+import com.lospollos.wizardweather.data.ImageLoader
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.data.network.mappers.WeatherErrorMapper
 import com.lospollos.wizardweather.data.network.mappers.WeatherResponseMapper
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 
 class LoadWeatherViewModel : ViewModel() {
@@ -31,54 +36,64 @@ class LoadWeatherViewModel : ViewModel() {
     fun getIsLoading(): LiveData<Boolean> = isLoading
     fun getIcon(): LiveData<List<Bitmap>> = icon
 
-    private val job = Job()
-    private val vmScope = CoroutineScope(job + Dispatchers.Main.immediate)
+    private val disposableContainer = CompositeDisposable()
 
     override fun onCleared() {
         super.onCleared()
-        vmScope.cancel()
+        disposableContainer.dispose()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("CheckResult")
     fun loadWeather(city: String) {
-        vmScope.launch {
-            isLoading.value = true
-            val result = withContext(Dispatchers.IO) {
-                WeatherInteractor(
-                    mapper = WeatherResponseMapper(),
-                    errorMapper = WeatherErrorMapper()
-                ).execute(cityName = city)
-            }
-            val loadedIcon = withContext(Dispatchers.IO) {
-                when (result) {
-                    is Result.Success -> {
-                        val imageLinks = ImageLoader.loadImage(result)
-                        ImageLoader.loadImageFromStorage(imageLinks)
+        Log.i("THREAD1", Thread.currentThread().name)
+        var res: Result? = null
+        WeatherInteractor(
+            mapper = WeatherResponseMapper(),
+            errorMapper = WeatherErrorMapper()
+        )
+            .execute(cityName = city)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { isLoading.value = true }
+            .doAfterTerminate {
+                res?.let {res -> ImageLoader
+                    .loadIcons(res)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        handleResultIcons(res, it)
                     }
-                    is Result.LoadedFromDB -> {
-                        val imageLinks: ArrayList<String> = ArrayList(dayCount)
-                        for (resultItem in result.items!!) {
-                            imageLinks.add(resultItem.weatherIconUrl)
-                        }
-                        ImageLoader.loadImageFromStorage(imageLinks)
-                    }
-                    else -> null
                 }
+
+                isLoading.value = false
             }
-            handleResult(result, loadedIcon)
-            isLoading.value = false
-        }
+            .subscribe { result ->
+                Log.i("THREAD1", Thread.currentThread().name)
+                res = result
+                handleResultWeather(result)
+            }
+            .let(disposableContainer::add)
     }
 
-    private fun handleResult(result: Result, loadedIcon: ArrayList<Bitmap>?) {
+    private fun handleResultWeather(result: Result) {
         when (result) {
             is Result.Success -> {
                 weatherItems.value = result.items
-                icon.value = loadedIcon!!
             }
             is Result.LoadedFromDB -> {
                 weatherItems.value = result.items!!
+            }
+            is Result.Error -> handleError(result)
+        }
+    }
+
+    private fun handleResultIcons(result: Result, loadedIcon: ArrayList<Bitmap>?) {
+        when (result) {
+            is Result.Success -> {
+                icon.value = loadedIcon!!
+            }
+            is Result.LoadedFromDB -> {
                 icon.value = loadedIcon!!
             }
             is Result.Error -> handleError(result)

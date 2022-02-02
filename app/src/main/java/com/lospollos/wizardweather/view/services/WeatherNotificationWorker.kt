@@ -17,35 +17,38 @@ import com.lospollos.wizardweather.App.Companion.context
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.view.activities.MainActivity
+import io.reactivex.Single
 
 class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
-    CoroutineWorker(context, params) {
+    RxWorker(context, params) {
 
     private val CHANNEL_ID = "channelID"
     private val NOTIFY_ID = 101
     private val notificationManager = NotificationManagerCompat.from(context)
 
+    @SuppressLint("CheckResult")
     @RequiresApi(Build.VERSION_CODES.M)
-    override suspend fun doWork(): Result {
-        return try {
+    override fun createWork(): Single<Result> {
+        try {
             notificationManager.cancel(NOTIFY_ID)
             val cityName = inputData.getString("cityName")
-            val loadedInfo: List<WeatherResponseModel>?
+            //val loadedInfo: List<WeatherResponseModel>?
 
-            if (cityName != null) {
-                loadedInfo = NotificationInfoLoader.loadWeather(cityName)
+            return if (cityName != null) {
+                NotificationInfoLoader.loadWeather(cityName).subscribe {
+                    val weatherInfo: String = if (it != null) {
+                        it[0].temp
+                    } else {
+                        NotificationInfoLoader.message.toString()
+                    }
+                    showNotification(weatherInfo, cityName)
+                }
+                Single.create { Result.success() }
             } else {
-                return Result.failure()
+                Single.create { Result.failure() }
             }
-            val weatherInfo: String = if (loadedInfo != null) {
-                loadedInfo[0].temp
-            } else {
-                NotificationInfoLoader.message.toString()
-            }
-            showNotification(weatherInfo, cityName)
-            Result.success()
         } catch (e: Exception) {
-            Result.failure()
+            return Single.create { Result.failure() }
         }
     }
 

@@ -1,9 +1,10 @@
 package com.lospollos.wizardweather.data
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.lospollos.wizardweather.App
@@ -12,41 +13,48 @@ import com.lospollos.wizardweather.data.database.WeatherDBProvider
 import com.lospollos.wizardweather.data.network.*
 import com.lospollos.wizardweather.data.network.mappers.EntityToModelMapper
 import com.lospollos.wizardweather.data.network.retrofit.RetrofitServices
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
 
 class WeatherInteractor(
     private val mapper: EntityToModelMapper<WeatherSuccessModel, List<WeatherResponseModel>>,
     private val errorMapper: EntityToModelMapper<WeatherErrorModel, NotFoundError>
 ) {
+    @SuppressLint("CheckResult")
     @RequiresApi(Build.VERSION_CODES.M)
-    suspend fun execute(cityName: String): Result {
+    fun execute(cityName: String): Observable<Result> {
         if (!isNetworkAvailable())
             return if (App.database.weatherDao.getWeatherByCityName(cityName).isEmpty()) {
-                Result.Error.NoNetwork
+                Observable.just(Result.Error.NoNetwork)
             }
             else {
-                Result.LoadedFromDB(WeatherDBProvider.getWeatherByCityName(cityName))
+                Observable.just(
+                    Result.LoadedFromDB(WeatherDBProvider.getWeatherByCityName(cityName))
+                )
             }
         else {
-            val weatherData: Result
-            try {
-                val response = RetrofitServices.weatherApi
-                    .loadWeatherByCityName(cityName)
-                weatherData = handleResponse(response, mapper, errorMapper)
+            Log.i("THREAD1", Thread.currentThread().name)
+            val responseObservable = RetrofitServices.weatherApi
+                .loadWeatherByCityName(cityName)
+                .map{ handleResponse(it, mapper, errorMapper) }
+                .onErrorReturn { Result.Error.Unknown(it.toString()) }
 
-                WeatherDBProvider.deleteOldWeatherByCityName(cityName)
-                WeatherDBProvider.insertWeatherForCity(
-                    (weatherData as Result.Success).items,
-                    ImageLoader.loadImage(weatherData),
-                    cityName
-                )
-            } catch (e: Exception) {
-                return Result.Error.Unknown(
-                    error = e.localizedMessage ?: e.message
-                    ?: App.context.getString(R.string.unknown_error)
-                )
+            responseObservable
+                .subscribeOn(Schedulers.io())
+                .subscribe {
+                try {
+                    val success = it as Result.Success
+                    WeatherDBProvider.deleteOldWeatherByCityName(cityName)
+                    WeatherDBProvider.insertWeatherForCity(
+                        (success).items,
+                        ImageLoader.loadImage(it),
+                        cityName
+                    )
+                } catch(e: Exception) { }
             }
-            return weatherData
+            return responseObservable
         }
     }
 
@@ -108,9 +116,7 @@ class WeatherInteractor(
 sealed class Result {
     data class Success(val items: List<WeatherResponseModel>) : Result()
 
-    data class LoadedFromDB(
-        val items: List<WeatherResponseModel>?
-    ) : Result()
+    data class LoadedFromDB(val items: List<WeatherResponseModel>?) : Result()
 
     sealed class Error : Result() {
         data class NotFound(val error: NotFoundError) : Error()

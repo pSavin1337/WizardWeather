@@ -1,26 +1,47 @@
 package com.lospollos.wizardweather.view.services
 
+import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.lospollos.wizardweather.App
+import com.lospollos.wizardweather.Constants
 import com.lospollos.wizardweather.R
+import com.lospollos.wizardweather.data.ImageLoader
 import com.lospollos.wizardweather.data.network.mappers.WeatherErrorMapper
 import com.lospollos.wizardweather.data.WeatherInteractor
 import com.lospollos.wizardweather.data.Result
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.data.network.mappers.WeatherResponseMapper
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 object NotificationInfoLoader {
 
     var message: String? = null
+    //private var weatherInfo: List<WeatherResponseModel>? = null
+    //lateinit var weatherInfoObservable:
 
+    @SuppressLint("CheckResult")
     @RequiresApi(Build.VERSION_CODES.M)
-    suspend fun loadWeather(city: String): List<WeatherResponseModel>? = handleResult(
-        WeatherInteractor(
-            mapper = WeatherResponseMapper(),
-            errorMapper = WeatherErrorMapper()
-        ).execute(cityName = city)
-    )
+    fun loadWeather(city: String): Observable<List<WeatherResponseModel>> {
+        return Observable.create {
+            WeatherInteractor(
+                mapper = WeatherResponseMapper(),
+                errorMapper = WeatherErrorMapper()
+            )
+                .execute(cityName = city)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { result ->
+                    handleResult(result)?.let { res -> it.onNext(res) }
+                }
+        }
+    }
 
     private fun handleResult(result: Result): List<WeatherResponseModel>? {
         message = null
