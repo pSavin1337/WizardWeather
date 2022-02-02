@@ -10,6 +10,8 @@ import com.bumptech.glide.Glide
 import com.lospollos.wizardweather.App.Companion.context
 import com.lospollos.wizardweather.Constants.dayCount
 import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -25,17 +27,17 @@ object ImageLoader {
         when (result) {
             is Result.Success -> {
                 val imageLinks = loadImage(result)
-                Observable.just(loadImageFromStorage(imageLinks))
+                Observable.just(loadImageFromStorage(imageLinks)).subscribeOn(Schedulers.io())
             }
             is Result.LoadedFromDB -> {
                 val imageLinks: ArrayList<String> = ArrayList(dayCount)
                 for (resultItem in result.items!!) {
                     imageLinks.add(resultItem.weatherIconUrl)
                 }
-                Observable.just(loadImageFromStorage(imageLinks))
+                Observable.just(loadImageFromStorage(imageLinks)).subscribeOn(Schedulers.io())
             }
             is Result.Error -> {
-                Observable.just(ArrayList(0))
+                Observable.just(ArrayList<Bitmap>(0)).subscribeOn(Schedulers.io())
             }
         }
 

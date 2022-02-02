@@ -48,32 +48,45 @@ class LoadWeatherViewModel : ViewModel() {
     fun loadWeather(city: String) {
         Log.i("THREAD1", Thread.currentThread().name)
         var res: Result? = null
-        WeatherInteractor(
-            mapper = WeatherResponseMapper(),
-            errorMapper = WeatherErrorMapper()
-        )
-            .execute(cityName = city)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { isLoading.value = true }
-            .doAfterTerminate {
-                res?.let {res -> ImageLoader
-                    .loadIcons(res)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        handleResultIcons(res, it)
+        Observable.create<Result> { obs ->
+            WeatherInteractor(
+                mapper = WeatherResponseMapper(),
+                errorMapper = WeatherErrorMapper()
+            )
+                .execute(cityName = city)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { isLoading.postValue(true) }
+                .doAfterTerminate {
+                    res?.let {res ->
+                        Observable.create<ArrayList<Bitmap>> { obsIc ->
+                            ImageLoader
+                                .loadIcons(res)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe {
+                                    obsIc.onNext(it)
+                                    obsIc.onComplete()
+                                }
+                        }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doAfterTerminate { obs.onComplete() }
+                            .subscribe { handleResultIcons(res, it) }
                     }
                 }
-
-                isLoading.value = false
-            }
-            .subscribe { result ->
-                Log.i("THREAD1", Thread.currentThread().name)
-                res = result
-                handleResultWeather(result)
-            }
+                .subscribe { result ->
+                    Log.i("THREAD1", Thread.currentThread().name)
+                    res = result
+                    obs.onNext(result)
+                }
+                .let(disposableContainer::add)
+        }
+            .subscribeOn(Schedulers.io())
+            .doAfterTerminate { isLoading.postValue(false) }
+            .subscribe { handleResultWeather(it) }
             .let(disposableContainer::add)
+
     }
 
     private fun handleResultWeather(result: Result) {

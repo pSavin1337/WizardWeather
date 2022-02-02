@@ -27,7 +27,8 @@ class WeatherInteractor(
     fun execute(cityName: String): Observable<Result> {
         if (!isNetworkAvailable())
             return if (App.database.weatherDao.getWeatherByCityName(cityName).isEmpty()) {
-                Observable.just(Result.Error.NoNetwork)
+                Observable
+                    .just(Result.Error.NoNetwork)
             }
             else {
                 Observable.just(
@@ -54,7 +55,7 @@ class WeatherInteractor(
                     )
                 } catch(e: Exception) { }
             }
-            return responseObservable
+            return responseObservable.subscribeOn(Schedulers.io())
         }
     }
 

@@ -35,14 +35,16 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
             //val loadedInfo: List<WeatherResponseModel>?
 
             return if (cityName != null) {
-                NotificationInfoLoader.loadWeather(cityName).subscribe {
-                    val weatherInfo: String = if (it != null) {
-                        it[0].temp
-                    } else {
-                        NotificationInfoLoader.message.toString()
+                NotificationInfoLoader
+                    .loadWeather(cityName)
+                    .subscribe {
+                        val weatherInfo: String = if (it != null) {
+                            it[0].temp
+                        } else {
+                            NotificationInfoLoader.message.toString()
+                        }
+                        showNotification(weatherInfo, cityName)
                     }
-                    showNotification(weatherInfo, cityName)
-                }
                 Single.create { Result.success() }
             } else {
                 Single.create { Result.failure() }

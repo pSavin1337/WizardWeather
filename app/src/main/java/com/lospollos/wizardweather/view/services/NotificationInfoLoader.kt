@@ -23,13 +23,11 @@ import io.reactivex.schedulers.Schedulers
 object NotificationInfoLoader {
 
     var message: String? = null
-    //private var weatherInfo: List<WeatherResponseModel>? = null
-    //lateinit var weatherInfoObservable:
 
     @SuppressLint("CheckResult")
     @RequiresApi(Build.VERSION_CODES.M)
     fun loadWeather(city: String): Observable<List<WeatherResponseModel>> {
-        return Observable.create {
+        return Observable.create<List<WeatherResponseModel>> {
             WeatherInteractor(
                 mapper = WeatherResponseMapper(),
                 errorMapper = WeatherErrorMapper()
@@ -38,9 +36,11 @@ object NotificationInfoLoader {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { result ->
-                    handleResult(result)?.let { res -> it.onNext(res) }
+                    handleResult(result)?.let { it1 -> it.onNext(it1) }
                 }
         }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     private fun handleResult(result: Result): List<WeatherResponseModel>? {
