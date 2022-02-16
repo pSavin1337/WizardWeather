@@ -5,7 +5,7 @@ import com.lospollos.wizardweather.Constants.responseInDayCount
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.data.network.WeatherSuccessModel
 
-class WeatherResponseMapper :
+object WeatherResponseMapper :
     EntityToModelMapper<WeatherSuccessModel, List<WeatherResponseModel>> {
     override fun mapEntity(entity: WeatherSuccessModel): List<WeatherResponseModel> {
 

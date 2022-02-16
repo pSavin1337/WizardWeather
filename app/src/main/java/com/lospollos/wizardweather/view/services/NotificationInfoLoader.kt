@@ -16,10 +16,7 @@ object NotificationInfoLoader {
 
     @RequiresApi(Build.VERSION_CODES.M)
     suspend fun loadWeather(city: String): List<WeatherResponseModel>? = handleResult(
-        WeatherInteractor(
-            mapper = WeatherResponseMapper(),
-            errorMapper = WeatherErrorMapper()
-        ).execute(cityName = city)
+        WeatherInteractor().execute(cityName = city)
     )
 
     private fun handleResult(result: Result): List<WeatherResponseModel>? {
@@ -35,10 +32,11 @@ object NotificationInfoLoader {
     }
 
     private fun handleError(result: Result.Error) {
+        val context = App.appComponent.getContext()
         message = when (result) {
-            is Result.Error.NoNetwork -> App.context.getString(R.string.no_network)
+            is Result.Error.NoNetwork -> context.getString(R.string.no_network)
             is Result.Error.NotFound -> result.error.message
-            is Result.Error.Unknown -> App.context.getString(R.string.unknown_error)
+            is Result.Error.Unknown -> context.getString(R.string.unknown_error)
         }
     }
 

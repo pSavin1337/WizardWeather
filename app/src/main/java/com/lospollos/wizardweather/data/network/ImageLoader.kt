@@ -1,5 +1,6 @@
 package com.lospollos.wizardweather.data.network
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.net.Uri
@@ -9,7 +10,7 @@ import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.lospollos.wizardweather.App
-import com.lospollos.wizardweather.App.Companion.context
+import com.lospollos.wizardweather.App.Companion.appComponent
 import com.lospollos.wizardweather.Constants.dayCount
 import com.lospollos.wizardweather.data.Result
 import java.io.File
@@ -26,6 +27,7 @@ object ImageLoader {
     }
 
     private fun saveImage(image: Bitmap): String? {
+        val context = appComponent.getContext()
         var savedImagePath: String? = null
         val imageFileName = "PNG_weather_icon_${getIndex()}.png"
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -84,6 +86,7 @@ object ImageLoader {
     }
 
     fun loadImage(result: Result.Success): ArrayList<String> {
+        val context = appComponent.getContext()
         val iconWeatherList: ArrayList<String> = ArrayList(dayCount)
         for (i in 0 until dayCount)
             saveImage(
@@ -105,6 +108,7 @@ object ImageLoader {
     }
 
     fun loadImageFromStorage(links: ArrayList<String>): ArrayList<Bitmap> {
+        val context = appComponent.getContext()
         val loadedIcons: ArrayList<Bitmap> = ArrayList(dayCount)
         for (link in links)
             loadedIcons.add(

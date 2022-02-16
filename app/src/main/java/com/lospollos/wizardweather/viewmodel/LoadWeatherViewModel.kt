@@ -8,7 +8,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.lospollos.wizardweather.App.Companion.context
+import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.Constants.dayCount
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.data.Result
@@ -45,10 +45,7 @@ class LoadWeatherViewModel : ViewModel() {
         vmScope.launch {
             isLoading.value = true
             val result = withContext(Dispatchers.IO) {
-                WeatherInteractor(
-                    mapper = WeatherResponseMapper(),
-                    errorMapper = WeatherErrorMapper()
-                ).execute(cityName = city)
+                WeatherInteractor().execute(cityName = city)
             }
             val loadedIcon = withContext(Dispatchers.IO) {
                 when (result) {
@@ -86,6 +83,7 @@ class LoadWeatherViewModel : ViewModel() {
     }
 
     private fun handleError(result: Result.Error) {
+        val context = App.appComponent.getContext()
         when (result) {
             is Result.Error.NoNetwork -> message.value = context.getString(R.string.no_network)
             is Result.Error.NotFound -> message.value = result.error.message
@@ -94,6 +92,7 @@ class LoadWeatherViewModel : ViewModel() {
     }
 
     fun openShareMenu(shareText: String) {
+        val context = App.appComponent.getContext()
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, shareText)

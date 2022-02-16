@@ -1,5 +1,6 @@
 package com.lospollos.wizardweather.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +9,7 @@ import androidx.work.Data
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
-import com.lospollos.wizardweather.App.Companion.context
+import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.data.database.CityDBProvider
 import com.lospollos.wizardweather.view.City
@@ -32,11 +33,12 @@ class CityListViewModel : ViewModel() {
 
     fun getCityList() = vmScope.launch {
         cityList.value = withContext(Dispatchers.IO) {
-            CityDBProvider.getCityList()
+            App.appComponent.getCityDatabaseProvider().getCityList()
         }
     }
 
     fun openNotificationWorker(cityName: String) {
+        val context = App.appComponent.getContext()
         WorkManager.getInstance(context).cancelAllWorkByTag(context.getString(R.string.worker_tag))
 
         val workRequest: WorkRequest
@@ -49,6 +51,7 @@ class CityListViewModel : ViewModel() {
     }
 
     fun closeNotificationWorker() {
+        val context = App.appComponent.getContext()
         notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancel(101)
         WorkManager.getInstance(context).cancelAllWorkByTag(context.getString(R.string.worker_tag))
@@ -56,7 +59,7 @@ class CityListViewModel : ViewModel() {
 
     fun updateCityList(cityList: List<City>) = vmScope.launch {
         withContext(Dispatchers.IO) {
-            CityDBProvider.updateCityList(cityList)
+            App.appComponent.getCityDatabaseProvider().updateCityList(cityList)
         }
     }
 

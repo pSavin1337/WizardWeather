@@ -4,8 +4,7 @@ import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.Constants.dayCount
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
 
-object WeatherDBProvider {
-    private val db: WeatherDB = App.database
+class WeatherDBProvider(private val db: WeatherDB) {
 
     fun insertWeatherForCity(
         weather: List<WeatherResponseModel>,

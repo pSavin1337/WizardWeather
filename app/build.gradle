@@ -85,4 +85,8 @@ dependencies {
     // optional - Multiprocess support
     implementation "androidx.work:work-multiprocess:2.7.1"
 
+    def dagger_version = "2.40"
+    implementation "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
 }

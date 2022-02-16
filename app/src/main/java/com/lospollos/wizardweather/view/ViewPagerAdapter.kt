@@ -10,7 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.lospollos.wizardweather.App.Companion.context
+import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.Constants.dayCount
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
@@ -27,6 +27,7 @@ class ViewPagerAdapter(
 
     @SuppressLint("UseCompatLoadingForDrawables")
     class PagerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val context = App.appComponent.getContext()
         var textView: TextView? = null
         var image: ImageView? = null
         var shareButton: Button? = null
@@ -58,6 +59,7 @@ class ViewPagerAdapter(
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
+        val context = App.appComponent.getContext()
         val temperature = apiResponse[position].temp
         val pressure = apiResponse[position].pressure
         val windSpeed = apiResponse[position].windSpeed

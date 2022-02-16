@@ -3,9 +3,7 @@ package com.lospollos.wizardweather.data.database
 import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.view.City
 
-object CityDBProvider {
-
-    private val db: WeatherDB = App.database
+class CityDBProvider(private val db: WeatherDB) {
 
     fun updateCityList(cityList: List<City>) {
         db.weatherDao.deleteCityList(db.weatherDao.getCityList())

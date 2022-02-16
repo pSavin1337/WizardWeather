@@ -13,7 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
-import com.lospollos.wizardweather.App.Companion.context
+import com.lospollos.wizardweather.App
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.view.activities.MainActivity
@@ -51,6 +51,7 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
 
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun showNotification(weatherInfo: String, cityName: String) {
+        val context = App.appComponent.getContext()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = context.getString(R.string.notification_channel_name)
             val descriptionText = context.getString(R.string.notification_channel_description)
