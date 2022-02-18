@@ -1,23 +1,28 @@
 package com.lospollos.wizardweather.viewmodel
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.work.Data
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
-import com.lospollos.wizardweather.App
+import androidx.work.*
+import com.lospollos.wizardweather.App.Companion.appComponent
 import com.lospollos.wizardweather.R
+import com.lospollos.wizardweather.dagger.WorkerModule
 import com.lospollos.wizardweather.data.database.CityDBProvider
 import com.lospollos.wizardweather.view.City
 import com.lospollos.wizardweather.view.services.WeatherNotificationWorker
 import kotlinx.coroutines.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class CityListViewModel : ViewModel() {
+class CityListViewModel(
+    @SuppressLint("StaticFieldLeak")
+    var context: Context,
+    var cityDBProvider: CityDBProvider,
+    var workerBuilder: PeriodicWorkRequest.Builder
+) : ViewModel() {
 
     private val cityList = MutableLiveData<List<City>?>()
     fun getCityListLiveData(): LiveData<List<City>?> = cityList
@@ -33,25 +38,21 @@ class CityListViewModel : ViewModel() {
 
     fun getCityList() = vmScope.launch {
         cityList.value = withContext(Dispatchers.IO) {
-            App.appComponent.getCityDatabaseProvider().getCityList()
+            cityDBProvider.getCityList()
         }
     }
 
     fun openNotificationWorker(cityName: String) {
-        val context = App.appComponent.getContext()
         WorkManager.getInstance(context).cancelAllWorkByTag(context.getString(R.string.worker_tag))
 
         val workRequest: WorkRequest
         val dataWeather = Data.Builder().putString("cityName", cityName).build()
 
-        workRequest = PeriodicWorkRequest.Builder(
-            WeatherNotificationWorker::class.java, 1, TimeUnit.HOURS
-        ).setInputData(dataWeather).build()
+        workRequest = workerBuilder.setInputData(dataWeather).build()
         WorkManager.getInstance(context).enqueue(workRequest)
     }
 
     fun closeNotificationWorker() {
-        val context = App.appComponent.getContext()
         notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancel(101)
         WorkManager.getInstance(context).cancelAllWorkByTag(context.getString(R.string.worker_tag))
@@ -59,7 +60,7 @@ class CityListViewModel : ViewModel() {
 
     fun updateCityList(cityList: List<City>) = vmScope.launch {
         withContext(Dispatchers.IO) {
-            App.appComponent.getCityDatabaseProvider().updateCityList(cityList)
+            cityDBProvider.updateCityList(cityList)
         }
     }
 

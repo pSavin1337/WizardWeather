@@ -1,6 +1,7 @@
 package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.view.LayoutInflater
@@ -11,9 +12,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.lospollos.wizardweather.App
+import com.lospollos.wizardweather.App.Companion.appComponent
 import com.lospollos.wizardweather.Constants.dayCount
 import com.lospollos.wizardweather.R
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
+import javax.inject.Inject
 
 class ViewPagerAdapter(
     private val cityName: String?,
@@ -24,10 +27,11 @@ class ViewPagerAdapter(
 
     lateinit var apiResponse: List<WeatherResponseModel>
     lateinit var icon: List<Bitmap>
+    @Inject
+    lateinit var context: Context
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    class PagerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val context = App.appComponent.getContext()
+    class PagerViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView) {
         var textView: TextView? = null
         var image: ImageView? = null
         var shareButton: Button? = null
@@ -49,17 +53,19 @@ class ViewPagerAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerViewHolder =
-        PagerViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerViewHolder {
+        appComponent.inject(this)
+        return PagerViewHolder(
             LayoutInflater
                 .from(parent.context)
-                .inflate(R.layout.cards_viewpager_item, parent, false)
+                .inflate(R.layout.cards_viewpager_item, parent, false),
+            context
         )
+    }
 
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
-        val context = App.appComponent.getContext()
         val temperature = apiResponse[position].temp
         val pressure = apiResponse[position].pressure
         val windSpeed = apiResponse[position].windSpeed

@@ -25,6 +25,7 @@ import com.lospollos.wizardweather.view.MainRecyclerAdapter
 import com.lospollos.wizardweather.view.activities.MainActivity
 import com.lospollos.wizardweather.view.services.WeatherNotificationWorker
 import com.lospollos.wizardweather.viewmodel.CityListViewModel
+import com.lospollos.wizardweather.viewmodel.CityListViewModelFactory
 import java.util.concurrent.TimeUnit
 
 class CityListFragment : Fragment() {
@@ -52,7 +53,7 @@ class CityListFragment : Fragment() {
 
         cityListViewModel = ViewModelProvider(
             this,
-            defaultViewModelProviderFactory
+            CityListViewModelFactory()
         )[CityListViewModel::class.java]
         cityListViewModel.getCityList()
         cityListViewModel.getCityListLiveData().observe(viewLifecycleOwner) { cityList ->

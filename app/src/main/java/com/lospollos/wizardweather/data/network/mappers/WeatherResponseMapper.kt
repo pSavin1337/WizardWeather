@@ -5,9 +5,9 @@ import com.lospollos.wizardweather.Constants.responseInDayCount
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.data.network.WeatherSuccessModel
 
-object WeatherResponseMapper :
-    EntityToModelMapper<WeatherSuccessModel, List<WeatherResponseModel>> {
-    override fun mapEntity(entity: WeatherSuccessModel): List<WeatherResponseModel> {
+class WeatherResponseMapper {
+
+    fun mapEntity(entity: WeatherSuccessModel): List<WeatherResponseModel> {
 
         val result: ArrayList<WeatherResponseModel> = ArrayList(dayCount)
         var i = 0
@@ -30,4 +30,5 @@ object WeatherResponseMapper :
         }
         return result
     }
+
 }

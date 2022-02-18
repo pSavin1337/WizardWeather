@@ -17,6 +17,7 @@ import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.view.ViewPagerAdapter
 import com.lospollos.wizardweather.view.activities.MainActivity
 import com.lospollos.wizardweather.viewmodel.LoadWeatherViewModel
+import com.lospollos.wizardweather.viewmodel.LoadWeatherViewModelFactory
 
 class WeatherCardsFragment : Fragment() {
 
@@ -39,7 +40,7 @@ class WeatherCardsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         loadWeatherViewModel = ViewModelProvider(
             this,
-            defaultViewModelProviderFactory
+            LoadWeatherViewModelFactory()
         )[LoadWeatherViewModel::class.java]
         selectedCityName = (activity as MainActivity).selectedCity
         progressBar = view.findViewById(R.id.progressBar)

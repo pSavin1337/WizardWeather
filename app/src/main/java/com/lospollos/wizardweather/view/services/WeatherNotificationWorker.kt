@@ -13,34 +13,40 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
-import com.lospollos.wizardweather.App
+import com.lospollos.wizardweather.App.Companion.appComponent
 import com.lospollos.wizardweather.R
+import com.lospollos.wizardweather.dagger.WorkerModule
 import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.view.activities.MainActivity
+import javax.inject.Inject
 
-class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
+class WeatherNotificationWorker(var context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
     private val CHANNEL_ID = "channelID"
     private val NOTIFY_ID = 101
     private val notificationManager = NotificationManagerCompat.from(context)
 
+    @Inject
+    lateinit var notificationLoader: NotificationInfoLoader
+
     @RequiresApi(Build.VERSION_CODES.M)
     override suspend fun doWork(): Result {
         return try {
+            appComponent.inject(this)
             notificationManager.cancel(NOTIFY_ID)
             val cityName = inputData.getString("cityName")
             val loadedInfo: List<WeatherResponseModel>?
 
             if (cityName != null) {
-                loadedInfo = NotificationInfoLoader.loadWeather(cityName)
+                loadedInfo = notificationLoader.loadWeather(cityName)
             } else {
                 return Result.failure()
             }
             val weatherInfo: String = if (loadedInfo != null) {
                 loadedInfo[0].temp
             } else {
-                NotificationInfoLoader.message.toString()
+                notificationLoader.message.toString()
             }
             showNotification(weatherInfo, cityName)
             Result.success()
@@ -51,7 +57,6 @@ class WeatherNotificationWorker(context: Context, params: WorkerParameters) :
 
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun showNotification(weatherInfo: String, cityName: String) {
-        val context = App.appComponent.getContext()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = context.getString(R.string.notification_channel_name)
             val descriptionText = context.getString(R.string.notification_channel_description)
