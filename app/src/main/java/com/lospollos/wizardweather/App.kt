@@ -13,6 +13,7 @@ class App : Application() {
         context = this
         database = Room
             .databaseBuilder(this, WeatherDB::class.java, getString(R.string.db_name))
+            .allowMainThreadQueries()
             .build()
     }
 

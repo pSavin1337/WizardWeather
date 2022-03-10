@@ -16,18 +16,14 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.util.*
+import kotlin.collections.ArrayList
 
 object ImageLoader {
 
-    private var i = 0
-
-    private fun getIndex(): Int {
-        return ++i
-    }
-
     private fun saveImage(image: Bitmap): String? {
         var savedImagePath: String? = null
-        val imageFileName = "PNG_weather_icon_${getIndex()}.png"
+        val imageFileName = "PNG_weather_icon_${UUID.randomUUID()}.png"
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val values = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, imageFileName)
