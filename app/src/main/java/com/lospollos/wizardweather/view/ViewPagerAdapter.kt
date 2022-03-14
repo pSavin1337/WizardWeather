@@ -1,8 +1,10 @@
 package com.lospollos.wizardweather.view
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +19,9 @@ import com.lospollos.wizardweather.data.network.WeatherResponseModel
 
 class ViewPagerAdapter(
     private val cityName: String?,
-    val onShareButtonClick: (weatherData: String) -> Unit,
-    val onBackButtonClick: () -> Unit
+    val onShareButtonClick: (weatherData: String, imgLink: String) -> Unit,
+    val onBackButtonClick: () -> Unit,
+    val onImageClick: (imgLink: String) -> Unit
 ) :
     RecyclerView.Adapter<ViewPagerAdapter.PagerViewHolder>() {
 
@@ -70,10 +73,16 @@ class ViewPagerAdapter(
                 "$cityName\n$temperature"
         holder.diagramView?.humidity = apiResponse[position].humidity.split(" ")[1].toInt()
         holder.shareButton?.setOnClickListener {
-            onShareButtonClick("$cityName\n$temperature\n$weatherDate")
+            onShareButtonClick(
+                "$cityName\n$temperature\n$weatherDate",
+                apiResponse[position].weatherIconUrl
+            )
         }
         holder.backButton?.setOnClickListener {
             onBackButtonClick()
+        }
+        holder.image?.setOnClickListener {
+            onImageClick(apiResponse[position].weatherIconUrl)
         }
     }
 

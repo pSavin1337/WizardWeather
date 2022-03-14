@@ -66,7 +66,8 @@ class WeatherCardsFragment : Fragment() {
                 adapter = ViewPagerAdapter(
                     selectedCityName,
                     loadWeatherViewModel::openShareMenu,
-                    ::closeWeatherCardsFragment)
+                    ::closeWeatherCardsFragment,
+                    loadWeatherViewModel::onImageClick)
                 viewPager.adapter = adapter
                 adapter.icon = it
                 adapter.apiResponse = apiResponse

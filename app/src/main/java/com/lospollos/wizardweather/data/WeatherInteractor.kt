@@ -33,11 +33,15 @@ class WeatherInteractor(
                 val response = RetrofitServices.weatherApi
                     .loadWeatherByCityName(cityName)
                 weatherData = handleResponse(response, mapper, errorMapper)
-
+                val imageLinks = ImageLoader.loadImage(weatherData as Result.Success)
+                var i = 0
+                weatherData.items.forEach { weather ->
+                    weather.weatherIconUrl = imageLinks[i++]
+                }
                 WeatherDBProvider.deleteOldWeatherByCityName(cityName)
                 WeatherDBProvider.insertWeatherForCity(
-                    (weatherData as Result.Success).items,
-                    ImageLoader.loadImage(weatherData),
+                    weatherData.items,
+                    imageLinks,
                     cityName
                 )
             } catch (e: Exception) {

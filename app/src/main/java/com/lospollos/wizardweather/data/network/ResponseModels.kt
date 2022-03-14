@@ -9,7 +9,7 @@ data class WeatherResponseModel(
     val clouds: String,
     val weatherId: Int,
     val weatherDescription: String,
-    val weatherIconUrl: String,
+    var weatherIconUrl: String,
     val date: String
 )
 

@@ -2,7 +2,9 @@ package com.lospollos.wizardweather.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
@@ -18,6 +20,7 @@ import com.lospollos.wizardweather.data.network.WeatherResponseModel
 import com.lospollos.wizardweather.data.network.mappers.WeatherErrorMapper
 import com.lospollos.wizardweather.data.network.mappers.WeatherResponseMapper
 import kotlinx.coroutines.*
+import java.net.URI
 
 class LoadWeatherViewModel : ViewModel() {
 
@@ -93,14 +96,26 @@ class LoadWeatherViewModel : ViewModel() {
         }
     }
 
-    fun openShareMenu(shareText: String) {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, shareText)
+    fun openShareMenu(shareText: String, imgLink: String) {
+
+        val sendIntent: Intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            type = "image/png"
+            putExtra(Intent.EXTRA_STREAM, Uri.parse(imgLink))
+            type = "message/rfc822";
         }
         val shareIntent = Intent.createChooser(sendIntent, null)
+        shareIntent.flags = FLAG_ACTIVITY_NEW_TASK
         context.startActivity(shareIntent)
+    }
+
+    fun onImageClick(imgLink: String) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(Uri.parse(imgLink), "image/png")
+            flags = FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
     }
 
 }
