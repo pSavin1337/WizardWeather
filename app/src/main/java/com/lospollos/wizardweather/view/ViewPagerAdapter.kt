@@ -61,6 +61,11 @@ class ViewPagerAdapter(
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
+
+        if (position == 2) {
+            throw Exception("Example exception")
+        }
+
         val temperature = apiResponse[position].temp
         val pressure = apiResponse[position].pressure
         val windSpeed = apiResponse[position].windSpeed
